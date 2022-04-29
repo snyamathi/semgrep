@@ -7,6 +7,7 @@ open Common
 let logger = Logging.get_logger [ __MODULE__ ]
 let default_stack_warning_kb = 100
 let default_heap_warning_mb = 400
+let default_heap_conservative_gc_tuning = 900
 
 (*
    Fail gracefully if memory becomes insufficient.
@@ -77,7 +78,13 @@ let run_with_memory_limit ?get_context
          'unlimited' or to a value greater than %d bytes so as to obtain an \
          exception rather than a segfault."
         (context ()) stack_bytes mem_limit;
-      stack_already_warned := true)
+      stack_already_warned := true);
+    if heap_bytes > default_heap_conservative_gc_tuning * mb then (
+      logger#warning
+        "We are consuming more than %d M of memory, switching to more \
+         conservative GC settings"
+        default_heap_conservative_gc_tuning;
+      Gc_tuning.conservative ())
   in
   let alarm = Gc.create_alarm limit_memory in
   try Fun.protect f ~finally:(fun () -> Gc.delete_alarm alarm) with

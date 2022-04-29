@@ -151,28 +151,6 @@ let action = ref ""
 let version =
   spf "semgrep-core version: %s, pfff: %s" Version.version Config_pfff.version
 
-(* Note that set_gc() may not interact well with Memory_limit and its use of
- * Gc.alarm. Indeed, the Gc.alarm triggers only at major cycle
- * and the tuning below raise significantly the major cycle trigger.
- * This is why we call set_gc() only when max_memory_mb is unset.
- *)
-let set_gc () =
-  logger#info "Gc tuning";
-  (*
-  if !Flag.debug_gc
-  then Gc.set { (Gc.get()) with Gc.verbose = 0x01F };
-*)
-  (* only relevant in bytecode, in native the stacklimit is the os stacklimit,
-   * which usually requires a ulimit -s 40000
-   *)
-  Gc.set { (Gc.get ()) with Gc.stack_limit = 1000 * 1024 * 1024 };
-
-  (* see www.elehack.net/michael/blog/2010/06/ocaml-memory-tuning *)
-  Gc.set { (Gc.get ()) with Gc.minor_heap_size = 4_000_000 };
-  Gc.set { (Gc.get ()) with Gc.major_heap_increment = 8_000_000 };
-  Gc.set { (Gc.get ()) with Gc.space_overhead = 300 };
-  ()
-
 (*****************************************************************************)
 (* Dumpers *)
 (*****************************************************************************)
@@ -653,7 +631,8 @@ let main () =
       (* main entry *)
       (* --------------------------------------------------------- *)
       | roots ->
-          if !Flag.gc_tuning && config.max_memory_mb = 0 then set_gc ();
+          if !Flag.gc_tuning && config.max_memory_mb = 0 then
+            Gc_tuning.aggressive ();
           let config = { config with roots } in
           Run_semgrep.semgrep_dispatch config)
 
