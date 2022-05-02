@@ -139,7 +139,9 @@ def _show_banners(current_version: Version, latest_version_object: JsonObject) -
         )
 
 
-def version_check(version_cache_path: Path = VERSION_CACHE_PATH) -> None:
+def version_check(
+    version_cache_path: Path = VERSION_CACHE_PATH,
+) -> Optional[JsonObject]:
     """
     Checks for messages from the backend, displaying any messages that match the current version
 
@@ -147,12 +149,14 @@ def version_check(version_cache_path: Path = VERSION_CACHE_PATH) -> None:
     """
     latest_version_object = _get_latest_version(version_cache_path)
     if latest_version_object is None:
-        return
+        return None
 
     try:
         current_version = Version(__VERSION__)
     except InvalidVersion as e:
         logger.debug(f"Invalid version string: {e}")
-        return
+        return None
 
     _show_banners(current_version, latest_version_object)
+
+    return latest_version_object

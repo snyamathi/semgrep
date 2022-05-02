@@ -616,7 +616,9 @@ def scan_options(func: Callable) -> Callable:
 )
 @scan_options
 @handle_command_errors
+@click.pass_context
 def scan(
+    context: click.Context,
     *,
     apply: bool,
     autofix: bool,
@@ -701,7 +703,8 @@ def scan(
         if enable_version_check:
             from semgrep.app.version import version_check
 
-            version_check()
+            version_data = version_check()
+            context.obj = version_data
         return None
 
     if apply:
