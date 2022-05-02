@@ -7,17 +7,17 @@
       "rule_id": "-",
       "spans": [
         {
-          "config_end": {
-            "col": 35,
-            "line": 3,
-            "offset": 51
-          },
           "config_path": [
             "rules",
             "0",
             "pattern"
           ],
-          "config_start": {
+          "end": {
+            "col": 35,
+            "line": 3,
+            "offset": 51
+          },
+          "start": {
             "col": 12,
             "line": 3,
             "offset": 28

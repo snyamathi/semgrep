@@ -7,11 +7,6 @@
       "rule_id": "rules.syntax.eqeq-is-bad",
       "spans": [
         {
-          "config_end": {
-            "col": 24,
-            "line": 4,
-            "offset": 73
-          },
           "config_path": [
             "rules",
             "0",
@@ -19,7 +14,12 @@
             "0",
             "pattern"
           ],
-          "config_start": {
+          "end": {
+            "col": 24,
+            "line": 4,
+            "offset": 73
+          },
+          "start": {
             "col": 14,
             "line": 4,
             "offset": 63
