@@ -936,6 +936,10 @@ def scan(
     if enable_version_check:
         from semgrep.app.version import version_check
 
+        num_findings = sum(len(filtered_matches_by_rule[f]) for f in filtered_matches_by_rule)
+        if num_findings == 0:
+            logger.info("\nExpecting to find something? Want to contribute a rule? Run `semgrep shouldafound` to win a $50 gift card!")
+
         version_check()
 
     return return_data

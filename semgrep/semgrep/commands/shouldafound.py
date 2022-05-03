@@ -8,7 +8,9 @@ from typing import Sequence
 
 import click
 
+from semgrep.app import app_session
 from semgrep.commands.wrapper import handle_command_errors
+from semgrep.constants import SHOULDAFOUND_BASE_URL
 
 
 @click.command()
@@ -69,7 +71,8 @@ def shouldafound(
             sys.exit(0)
 
     # send to backend
-
+    resp = app_session.post(f"{SHOULDAFOUND_BASE_URL}/shouldafound", json=data)
+    logger.info("Sent feedback. Thanks for your contribution!")
 
 def _read_lines(path: Path, start: Optional[int], end: Optional[int]) -> Sequence[str]:
     with path.open("r") as fd:
