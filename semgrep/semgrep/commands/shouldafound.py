@@ -4,8 +4,9 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Optional
+from typing import Sequence
 
-import click.types
+import click
 
 from semgrep.commands.wrapper import handle_command_errors
 
@@ -51,9 +52,28 @@ def shouldafound(
             subprocess.check_output(["git", "config", "user.email"]).decode().strip()
         )
 
+    text = _read_lines(path, start, end)
+
+    data = {
+        "email": email,
+        "lines": text,
+        "message": message,
+        "path": str(path.resolve().relative_to(os.getcwd())),
+    }
+
+    if not yes:
+        click.echo("Will send to Semgrep.dev:", err=True)
+        click.echo(json.dumps(data, indent=2), err=True)
+        if not click.confirm("OK to send?", err=True):
+            click.echo("Aborted", err=True)
+            sys.exit(0)
+
+    # send to backend
+
+
+def _read_lines(path: Path, start: Optional[int], end: Optional[int]) -> Sequence[str]:
     with path.open("r") as fd:
         lines = fd.readlines()
-
     if start is not None:
         if start < 1:
             click.echo("--start must be > 0", err=True)
@@ -68,22 +88,5 @@ def shouldafound(
                 click.echo("--end must be >= than --start", err=True)
                 sys.exit(2)
         lines = lines[start - 1 : end]
-
     text = "".join(lines)
-
-    data = {
-        "email": email,
-        "lines": text,
-        "message": message,
-        "path": str(path.resolve().relative_to(os.getcwd())),
-    }
-
-    if not yes:
-        click.echo("Will send to Semgrep.dev:", err=True)
-        click.echo(json.dumps(data, indent=2), err=True)
-        yes = click.confirm("OK to send?", err=True)
-
-    if not yes:
-        click.echo("Aborted", err=True)
-
-    # send to backend
+    return text
