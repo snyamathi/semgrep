@@ -936,10 +936,11 @@ def scan(
     if enable_version_check:
         from semgrep.app.version import version_check
 
-        num_findings = sum(len(filtered_matches_by_rule[f]) for f in filtered_matches_by_rule)
-        if num_findings == 0:
-            logger.info("\nExpecting to find something? Want to contribute a rule? Run `semgrep shouldafound` to win a $50 gift card!")
-
-        version_check()
+        latest_version_object = version_check()
+        if "shouldafound_msg" in latest_version_object:
+            num_findings = sum(len(filtered_matches_by_rule[f]) for f in filtered_matches_by_rule)
+            if num_findings == 0:
+                shouldafound_msg = latest_version_object["shouldafound_msg"]
+                logger.info("\n" + shouldafound_msg)
 
     return return_data
