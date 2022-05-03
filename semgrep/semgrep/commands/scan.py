@@ -42,6 +42,9 @@ from semgrep.verbose_logging import getLogger
 logger = getLogger(__name__)
 
 
+ScanReturn = Optional[Tuple[RuleMatchMap, List[SemgrepError], List[Rule], Set[Path]]]
+
+
 def __get_cpu_count() -> int:
     try:
         return multiprocessing.cpu_count()
@@ -678,7 +681,7 @@ def scan(
     verbose: bool,
     version: bool,
     vim: bool,
-) -> Optional[Tuple[RuleMatchMap, List[SemgrepError], List[Rule], Set[Path]]]:
+) -> ScanReturn:
     """
     Run semgrep rules on files
 
@@ -822,6 +825,7 @@ def scan(
     # already deleted the temporary stdin file.
     with converted_pipe_targets(target_sequence) as target_sequence:
         output_handler = OutputHandler(output_settings)
+        return_data: ScanReturn = None
 
         if dump_ast:
             dump_parsed_ast(
@@ -922,10 +926,16 @@ def scan(
                 severities=shown_severities,
             )
 
-            return filtered_matches_by_rule, semgrep_errors, filtered_rules, all_targets
+            return_data = (
+                filtered_matches_by_rule,
+                semgrep_errors,
+                filtered_rules,
+                all_targets,
+            )
 
     if enable_version_check:
         from semgrep.app.version import version_check
 
         version_check()
-    return None
+
+    return return_data
