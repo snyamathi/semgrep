@@ -258,20 +258,27 @@ let union_map f xs =
 let findings_of_tainted_sink env (taint : Taint.t) (sink : sink) : finding list
     =
   let ( let* ) = Option.bind in
-  taint |> Taint.elements
-  |> List.filter_map (fun taint ->
-         let trace = List.rev taint.rev_trace in
-         match taint.orig with
-         | Arg i ->
-             (* We need to check unifiability at the call site. *)
-             Some (ArgToSink (i, trace, sink))
-         | Src source ->
-             let src_pm, _ = pm_of_dm source in
-             let sink_pm, _ = pm_of_dm sink in
-             let* merged_env =
-               merge_source_sink_mvars env sink_pm.PM.env src_pm.PM.env
-             in
-             Some (SrcToSink { source; trace; sink; merged_env }))
+  let labels = labels_in_taint taint in
+  let sink_pm, ts = pm_of_dm sink in
+  let req = List.for_all (fun r -> List.mem r labels) ts.requires in
+  let reqnot =
+    not @@ List.exists (fun r -> List.mem r labels) ts.requires_not
+  in
+  if req && reqnot then
+    taint |> Taint.elements
+    |> List.filter_map (fun taint ->
+           let trace = List.rev taint.rev_trace in
+           match taint.orig with
+           | Arg i ->
+               (* We need to check unifiability at the call site. *)
+               Some (ArgToSink (i, trace, sink))
+           | Src source ->
+               let src_pm, _ = pm_of_dm source in
+               let* merged_env =
+                 merge_source_sink_mvars env sink_pm.PM.env src_pm.PM.env
+               in
+               Some (SrcToSink { source; trace; sink; merged_env }))
+  else []
 
 (* Produces a finding for every unifiable source-sink pair. *)
 let findings_of_tainted_sinks env (taint : Taint.t) (sinks : sink list) :
