@@ -11,7 +11,9 @@ import click
 from semgrep.app import app_session
 from semgrep.commands.wrapper import handle_command_errors
 from semgrep.constants import SHOULDAFOUND_BASE_URL
+from semgrep.verbose_logging import getLogger
 
+logger = getLogger(__name__)
 
 @click.command()
 @click.option(
@@ -72,7 +74,9 @@ def shouldafound(
 
     # send to backend
     resp = app_session.post(f"{SHOULDAFOUND_BASE_URL}/shouldafound", json=data)
+    playground_link = resp.json()['playground_link']
     logger.info("Sent feedback. Thanks for your contribution!")
+    logger.info(f"You can view and extend the generated rule template here: {playground_link}")
 
 def _read_lines(path: Path, start: Optional[int], end: Optional[int]) -> Sequence[str]:
     with path.open("r") as fd:
