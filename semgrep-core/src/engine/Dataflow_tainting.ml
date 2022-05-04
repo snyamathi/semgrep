@@ -166,6 +166,30 @@ let src_of_pm (pm, ts) = Src (PM (pm, ts))
 let taint_of_pm pm = { orig = src_of_pm pm; rev_trace = [] }
 let taint_of_pms pms = pms |> Common.map taint_of_pm |> Taint.of_list
 
+let labels_in_taint taint =
+  taint |> Taint.elements
+  |> List.filter_map (fun t ->
+         match t.orig with
+         | Src dm ->
+             let _, ts = pm_of_dm dm in
+             Some ts.Rule.label
+         | Arg _ -> None)
+
+let add_taint ~curr new_ =
+  let labels = labels_in_taint curr in
+  Taint.fold
+    (fun t taint ->
+      match t.orig with
+      | Arg _ -> Taint.add t taint
+      | Src dm ->
+          let _, ts = pm_of_dm dm in
+          let req = List.for_all (fun r -> List.mem r labels) ts.requires in
+          let reqnot =
+            not @@ List.exists (fun r -> List.mem r labels) ts.requires_not
+          in
+          if req && reqnot then Taint.add t taint else taint)
+    new_ curr
+
 (* Debug *)
 let show_taint_set taint =
   taint |> Taint.elements |> Common.map show_taint |> String.concat ", "
@@ -287,7 +311,7 @@ let check_tainted_var env (var : IL.name) : Taint.t =
     |> Option.value ~default:Taint.empty
   in
   let taint : Taint.t =
-    taint_sources |> Taint.union taint_var_env |> Taint.union taint_fun_env
+    add_taint ~curr:(Taint.union taint_var_env taint_fun_env) taint_sources
     (* |> PM.Set.union (is_tainted_function_hook config ((G.Id (var.ident, var.id_info)))) *)
   in
   match sanitizer_pms with
@@ -340,7 +364,7 @@ let rec check_tainted_expr env exp =
   | [] ->
       let sinks = orig_is_sink env.config exp.eorig |> Common.map dm_of_pm in
       let taint_sources = orig_is_source env.config exp.eorig |> taint_of_pms in
-      let taint = taint_sources |> Taint.union (check_subexpr exp) in
+      let taint = add_taint ~curr:(check_subexpr exp) taint_sources in
       let findings = findings_of_tainted_sinks env taint sinks in
       report_findings env findings;
       taint
@@ -443,7 +467,7 @@ let check_tainted_instr env instr : Taint.t =
       let taint_sources =
         orig_is_source env.config instr.iorig |> taint_of_pms
       in
-      let taint = taint_sources |> Taint.union (check_instr instr.i) in
+      let taint = add_taint ~curr:(check_instr instr.i) taint_sources in
       let findings = findings_of_tainted_sinks env taint sinks in
       report_findings env findings;
       taint
