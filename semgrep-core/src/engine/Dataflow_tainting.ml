@@ -305,6 +305,21 @@ let findings_of_tainted_return (taint : Taint.t) return_tok : finding list =
 (* Tainted *)
 (*****************************************************************************)
 
+let add_taint_to_var_in_env var_env var taint =
+  let taint =
+    let var_tok = snd var.ident in
+    if Parse_info.is_fake var_tok then taint
+    else
+      taint
+      |> Taint.map (fun t -> { t with rev_trace = var_tok :: t.rev_trace })
+  in
+  VarMap.update (str_of_name var)
+    (function
+      | None -> Some taint
+      (* THINK: Why can't we just replace the existing taint? *)
+      | Some taint' -> Some (Taint.union taint taint'))
+    var_env
+
 (* Test whether a variable occurrence is tainted, and if it is also a sink,
  * report the finding too (by side effect). *)
 let check_tainted_var env (var : IL.name) : Taint.t * var_env =
@@ -316,8 +331,13 @@ let check_tainted_var env (var : IL.name) : Taint.t * var_env =
         env.config.is_sink (G.Tk tok) )
     else ([], [], [])
   in
-  let taint_sources =
-    source_pms |> List.map (fun (x, _y, z) -> (x, z)) |> taint_of_pms
+  let src_reg, src_mut =
+    List.partition (fun (_x, y, _z) -> y < 0.99) source_pms
+  in
+  let taint_sources_reg =
+    src_reg |> List.map (fun (x, _y, z) -> (x, z)) |> taint_of_pms
+  and taint_sources_mut =
+    src_mut |> List.map (fun (x, _y, z) -> (x, z)) |> taint_of_pms
   and taint_var_env =
     VarMap.find_opt (str_of_name var) env.var_env
     |> Option.value ~default:Taint.empty
@@ -326,10 +346,12 @@ let check_tainted_var env (var : IL.name) : Taint.t * var_env =
     Hashtbl.find_opt env.fun_env (str_of_name var)
     |> Option.value ~default:Taint.empty
   in
+  let taint_sources = Taint.union taint_sources_reg taint_sources_mut in
   let taint : Taint.t =
     add_taint ~curr:(Taint.union taint_var_env taint_fun_env) taint_sources
     (* |> PM.Set.union (is_tainted_function_hook config ((G.Id (var.ident, var.id_info)))) *)
   in
+  let _var_env' = add_taint_to_var_in_env env.var_env var taint_sources_mut in
   match sanitizer_pms with
   (* TODO: We should check that taint and sanitizer(s) are unifiable. *)
   | _ :: _ -> (Taint.empty, env.var_env)
@@ -564,20 +586,7 @@ let (transfer :
             VarMap.remove (str_of_name var) var_env'
         | false, Some var ->
             logger#flash "2";
-            let taint =
-              let var_tok = snd var.ident in
-              if Parse_info.is_fake var_tok then taint
-              else
-                taint
-                |> Taint.map (fun t ->
-                       { t with rev_trace = var_tok :: t.rev_trace })
-            in
-            VarMap.update (str_of_name var)
-              (function
-                | None -> Some taint
-                (* THINK: Why can't we just replace the existing taint? *)
-                | Some taint' -> Some (Taint.union taint taint'))
-              var_env'
+            add_taint_to_var_in_env var_env' var taint
         | _, None ->
             logger#flash "3";
             var_env')
