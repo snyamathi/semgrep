@@ -193,14 +193,21 @@ let add_taint ~curr new_ =
           let reqnot =
             not @@ List.exists (fun r -> List.mem r labels) ts.requires_not
           in
-          logger#flash "adding taint for label %s req:%b req-not:%b" ts.label
-            req reqnot;
+          logger#flash "add_taint: adding taint for label %s req:%b req-not:%b"
+            ts.label req reqnot;
           if req && reqnot then Taint.add t taint else taint)
     new_ curr
 
 (* Debug *)
 let show_taint_set taint =
-  taint |> Taint.elements |> Common.map show_taint |> String.concat ", "
+  taint |> Taint.elements
+  |> Common.map (fun taint ->
+         match taint.orig with
+         | Arg _ -> show_taint taint
+         | Src src ->
+             let _pm, ts = pm_of_dm src in
+             ts.Rule.label)
+  |> String.concat ", "
   |> fun str -> "{ " ^ str ^ " }"
 
 (* Debug *)
@@ -323,6 +330,9 @@ let add_taint_to_var_in_env var_env var taint =
 (* Test whether a variable occurrence is tainted, and if it is also a sink,
  * report the finding too (by side effect). *)
 let check_tainted_var env (var : IL.name) : Taint.t * var_env =
+  logger#flash "-------------------------------------------";
+  logger#flash "CHECK_VAR %s @ %s" (str_of_name var)
+    (Parse_info.string_of_info @@ snd var.ident);
   let source_pms, sanitizer_pms, sink_pms =
     let _, tok = var.ident in
     if Parse_info.is_origintok tok then
@@ -331,8 +341,13 @@ let check_tainted_var env (var : IL.name) : Taint.t * var_env =
         env.config.is_sink (G.Tk tok) )
     else ([], [], [])
   in
+  logger#flash "check_var #sources = %d" (List.length source_pms);
   let src_reg, src_mut =
-    List.partition (fun (_x, y, _z) -> y < 0.99) source_pms
+    List.partition
+      (fun (_x, y, z) ->
+        logger#flash "label %s matches with %f" z.Rule.label y;
+        y < 0.99)
+      source_pms
   in
   let taint_sources_reg =
     src_reg |> List.map (fun (x, _y, z) -> (x, z)) |> taint_of_pms
@@ -347,11 +362,15 @@ let check_tainted_var env (var : IL.name) : Taint.t * var_env =
     |> Option.value ~default:Taint.empty
   in
   let taint_sources = Taint.union taint_sources_reg taint_sources_mut in
+  logger#flash "check_var: tainted_sources = %s" (show_taint_set taint_sources);
   let taint : Taint.t =
     add_taint ~curr:(Taint.union taint_var_env taint_fun_env) taint_sources
     (* |> PM.Set.union (is_tainted_function_hook config ((G.Id (var.ident, var.id_info)))) *)
   in
-  let _var_env' = add_taint_to_var_in_env env.var_env var taint_sources_mut in
+  let var_env' =
+    add_taint_to_var_in_env env.var_env var
+      (add_taint ~curr:taint_var_env taint_sources_mut)
+  in
   match sanitizer_pms with
   (* TODO: We should check that taint and sanitizer(s) are unifiable. *)
   | _ :: _ -> (Taint.empty, env.var_env)
@@ -359,7 +378,8 @@ let check_tainted_var env (var : IL.name) : Taint.t * var_env =
       let sinks = sink_pms |> Common.map dm_of_pm in
       let findings = findings_of_tainted_sinks env taint sinks in
       report_findings env findings;
-      (taint, env.var_env)
+      logger#flash "check var new env = %s" (_show_env var_env');
+      (taint, var_env')
 
 let union_taint_var_env (t1, v1) (t2, v2) = (Taint.union t1 t2, union_env v1 v2)
 
@@ -579,6 +599,12 @@ let (transfer :
     match node.F.n with
     | NInstr x -> (
         let taint, var_env' = check_tainted_instr env x in
+        let var_env' =
+          match LV.lvar_of_instr_opt x with
+          | None -> var_env'
+          | Some var ->
+              snd @@ check_tainted_var { env with var_env = var_env' } var
+        in
         (* logger#flash "instr %s \n ... is tainted? -> %b" (IL.show_instr_kind x.i) (not @@ Taint.is_empty taint); *)
         match (Taint.is_empty taint, LV.lvar_of_instr_opt x) with
         | true, Some var ->

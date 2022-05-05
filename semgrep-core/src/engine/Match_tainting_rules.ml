@@ -137,8 +137,8 @@ let any_in_ranges3 rule any rwms =
       |> Common.map (fun (rwm, x) ->
              let r1 = rwm.RM.r in
              let m =
-               (float_of_int @@ (r.Range.end_ - r.Range.start))
-               /. (float_of_int @@ (r1.Range.end_ - r1.Range.start))
+               (float_of_int @@ (r.Range.end_ - r.Range.start + 1))
+               /. (float_of_int @@ (r1.Range.end_ - r1.Range.start + 1))
              in
              (RM.range_to_pattern_match_adjusted rule rwm, m, x))
 
