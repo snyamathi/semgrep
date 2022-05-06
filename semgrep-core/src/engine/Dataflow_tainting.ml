@@ -132,6 +132,8 @@ type config = {
   filepath : Common.filename;
   rule_id : string;
   is_source : G.any -> (PM.t * float * Rule.taint_source) list;
+  is_propa_from : AST_generic.any -> string list;
+  is_propa_to : AST_generic.any -> (string * float) list;
   is_sink : G.any -> (PM.t * Rule.taint_sink) list;
   is_sanitizer : G.any -> PM.t list;
   unify_mvars : bool;
