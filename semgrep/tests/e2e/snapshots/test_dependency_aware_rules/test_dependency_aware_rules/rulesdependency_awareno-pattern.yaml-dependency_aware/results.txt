@@ -25,7 +25,5 @@ Some files were skipped or only partially analyzed.
   Scan was limited to files tracked by git.
 
 Ran 1 rule on 0 files: 0 findings.
-If Semgrep missed a finding, please send us feedback to let us know!
-  $ semgrep shouldafound --help
 
 === end of stderr - plain

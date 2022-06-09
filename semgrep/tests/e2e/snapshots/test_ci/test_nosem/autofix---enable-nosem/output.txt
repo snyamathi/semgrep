@@ -1,5 +1,5 @@
 === command
-$ SEMGREP_APP_TOKEN="" SEMGREP_USER_AGENT_APPEND="pytest" SEMGREP_SETTINGS_FILE="<MASKED>" semgrep ci --enable-nosem --disable-version-check --metrics=off --config p/something --json
+$ SEMGREP_APP_TOKEN="" SEMGREP_USER_AGENT_APPEND="pytest" SEMGREP_SETTINGS_FILE="<MASKED>" SEMGREP_VERSION_CACHE_PATH="<MASKED>" semgrep ci --enable-nosem --disable-version-check --metrics=off --config p/something --json
 === end of command
 
 === exit code
