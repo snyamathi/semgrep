@@ -29,6 +29,11 @@ def EnvFactory(envvars: Union[str, Iterable[str]]) -> Optional[str]:
 def EnvFactory(
     envvars: Union[str, Iterable[str]], default: Optional[str] = None
 ) -> Optional[str]:
+    """
+    An attrs factory that set the value of the given env vars as the default for a field.
+    
+    The first env var that has a non-empty value will be used.
+    """
     if isinstance(envvars, str):
         envvars = [envvars]
 

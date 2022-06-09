@@ -12,10 +12,41 @@ on:
       - "**.md"
 
 jobs:
+  # this job completes in 8s while build-core has a ~50s startup time due to its base image
+  # which is why we have this separate job that attempts to skip build-core altogether
+  restore-core-cache:
+    name: restore cached semgrep-core
+    runs-on: ubuntu-latest
+    outputs:
+      hit: ${{ steps.core-cache.outputs.cache-hit }}
+      key: ${{ steps.cache-key.outputs.key }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Remove broken symlinks
+        run: find -L . -type l -exec rm {} \;
+      - id: cache-key
+        name: Get cache key
+        run: echo ::set-output name=key::${{ runner.os }}-core-binary-${{ hashFiles('semgrep-core/**', '.github/workflows/tests.yml', 'scripts/install-alpine-semgrep-core') }}-$(git submodule status --cached | sha256sum | cut -d" " -f1)
+      - id: core-cache
+        name: Check if this semgrep-core binary is cached
+        uses: actions/cache@v3
+        with:
+          path: ocaml-build-artifacts.tgz
+          key: "${{ steps.cache-key.outputs.key }}"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        if: steps.core-cache.outputs.cache-hit == 'true'
+        with:
+          name: ocaml-build-artifacts
+          path: ocaml-build-artifacts.tgz
+
   build-core:
     name: build semgrep-core
     runs-on: ubuntu-latest
     container: returntocorp/ocaml:alpine-2022-04-14
+    needs: [restore-core-cache]
+    if: needs.restore-core-cache.outputs.hit != 'true'
     steps:
       - name: Pre-checkout fixes
         run: |
@@ -25,29 +56,18 @@ jobs:
           sudo chmod -R 777 "$github_cache_dir"
       - name: Checkout
         uses: actions/checkout@v3
-      - id: submodule-status
-        name: Get submodule version
-        run: echo ::set-output name=versions-hash::$(git submodule status --cached | sha256sum | cut -d" " -f1)
+        with:
+          submodules: recursive
       - name: Post-checkout fixes
         run: ./.github/post-checkout
-      - name: Remove broken symlinks
-        run: find -L . -type l -exec rm {} \;
-      - id: core-cache
-        name: Check if this semgrep-core binary is cached
+      - name: Prepare to cache this semgrep-core binary
         uses: actions/cache@v3
         with:
           path: ocaml-build-artifacts.tgz
-          key: "${{ runner.os }}-core-binary-${{ hashFiles('semgrep-core/**', '.github/workflows/tests.yml', 'scripts/install-alpine-semgrep-core') }}-${{ steps.submodule-status.outputs.versions-hash }}"
-      - name: Checkout
-        uses: actions/checkout@v3
-        if: steps.core-cache.outputs.cache-hit != 'true'
-        with:
-          submodules: recursive
+          key: "${{ needs.restore-core-cache.outputs.key }}"
       - name: Install pipenv
-        if: steps.core-cache.outputs.cache-hit != 'true'
         run: sudo pip install pipenv
       - name: Cache OCaml build files
-        if: steps.core-cache.outputs.cache-hit != 'true'
         uses: actions/cache@v3
         with:
           path: |
@@ -59,7 +79,6 @@ jobs:
             /home/user/.opam/*/.opam-switch/sources
           key: ${{ runner.os }}-ocamlbuild
       - name: Build semgrep-core
-        if: steps.core-cache.outputs.cache-hit != 'true'
         run: ./scripts/install-alpine-semgrep-core
         env:
           DUNE_CACHE: enabled
@@ -297,6 +316,10 @@ jobs:
     name: quality assurance on semgrep
     runs-on: ubuntu-latest
     needs: [build-core]
+    strategy:
+      fail-fast: false
+      matrix:
+        test_name: ["public_repos", "semgrep_rules_repo"]
     steps:
       - name: Install pipenv
         run: pipx install pipenv==2022.5.2
@@ -333,16 +356,9 @@ jobs:
         working-directory: semgrep
         run: |
           export PATH=/github/home/.local/bin:$PATH
-          pipenv run pytest -n auto -vv --tb=short --durations=0 tests/qa
+          pipenv run pytest -n auto -vv --tb=short --durations=0 tests/qa/test_${{ matrix.test_name }}.py
         env:
           QA_TESTS_CACHE_PATH: ~/.cache/semgrep-cache
-      - name: Generate cheatsheets for semgrep.dev
-        run: ./scripts/generate-cheatsheet
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: cheatsheet
-          path: cheatsheet.json
 
   # Run abbreviated version of benchmarks to check that they work
   benchmarks-lite:
