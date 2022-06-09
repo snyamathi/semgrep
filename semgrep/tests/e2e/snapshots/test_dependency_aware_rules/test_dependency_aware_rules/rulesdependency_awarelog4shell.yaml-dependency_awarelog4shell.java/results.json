@@ -33,7 +33,7 @@
             "lockfile": "targets/dependency_aware/pom.xml"
           }
         ],
-        "fingerprint": "2dad36618046aba1c66784346119c366",
+        "fingerprint": "a8a621dcfd3dd5c6962c1639625a4adcccc444fc5e6b1a7ba02947833ea3e7712647473962ca24e2e17535e74464ae1039041feef8c3e51b404407d55f084919_0",
         "is_ignored": false,
         "lines": "            logger.error(userName);",
         "message": "log4j logger.error tainted argument",

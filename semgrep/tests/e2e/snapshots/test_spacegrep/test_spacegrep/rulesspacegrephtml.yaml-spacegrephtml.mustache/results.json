@@ -15,7 +15,7 @@
         "offset": 918
       },
       "extra": {
-        "fingerprint": "4961c826fe3fdd06b1d29c073ec40142",
+        "fingerprint": "ebb1d0dfb7e19e3cf3a86a5c2ea7372cff0e8a5d6b502082c3f47224eb46a4618cbf65f4ae3cbc003d75006433ef3ca0dfc28f60bf476da25aa2f6960f7dd3f2_0",
         "is_ignored": false,
         "lines": "    var message = {{ message }};",
         "message": "Detected template variable in script tag. This is dangerous because\nHTML escaping does not prevent injection in script contexts.\n",
@@ -38,7 +38,7 @@
         "offset": 1033
       },
       "extra": {
-        "fingerprint": "d780c524bd08adbabc4a6cd905c84b5e",
+        "fingerprint": "ebb1d0dfb7e19e3cf3a86a5c2ea7372cff0e8a5d6b502082c3f47224eb46a4618cbf65f4ae3cbc003d75006433ef3ca0dfc28f60bf476da25aa2f6960f7dd3f2_1",
         "is_ignored": false,
         "lines": "    var message = {{ message }};",
         "message": "Detected template variable in script tag. This is dangerous because\nHTML escaping does not prevent injection in script contexts.\n",
@@ -61,7 +61,7 @@
         "offset": 1135
       },
       "extra": {
-        "fingerprint": "45cc448ab47764e490910c8be8426090",
+        "fingerprint": "ebb1d0dfb7e19e3cf3a86a5c2ea7372cff0e8a5d6b502082c3f47224eb46a4618cbf65f4ae3cbc003d75006433ef3ca0dfc28f60bf476da25aa2f6960f7dd3f2_0",
         "is_ignored": false,
         "lines": "    var message2 = {{ message2 }};",
         "message": "Detected template variable in script tag. This is dangerous because\nHTML escaping does not prevent injection in script contexts.\n",

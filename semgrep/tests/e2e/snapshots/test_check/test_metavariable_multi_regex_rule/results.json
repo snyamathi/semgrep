@@ -25,7 +25,7 @@
         "offset": 37
       },
       "extra": {
-        "fingerprint": "23d46f459538604499852f7c9197609c",
+        "fingerprint": "39a40f250b45beab4de63f259524e21567c1f19ab1381308f44be70c54acd1ee97c1a41cb4a5aa9798f7e1a43ec3bf6a1cfae7b399ac3c3904c9412486b937fc_0",
         "is_ignored": false,
         "lines": "metavariable_regex_test.method1(arg1)",
         "message": "Metavariable regex test multi regex",

@@ -25,7 +25,7 @@
         "offset": 96
       },
       "extra": {
-        "fingerprint": "dce9654204375612ebde83d55c295f4a",
+        "fingerprint": "54345e2ba900f9521fd363b1063b06cbaca67bfd67f9f5bdf4a00ade18d80f64bfeaa43196733dab6277ffc9289eed3bb9bd23178887b428a9dd7284bce88c33_0",
         "is_ignored": false,
         "lines": "    open(path)",
         "message": "Unsafe open from request data",
@@ -79,7 +79,7 @@
         "offset": 262
       },
       "extra": {
-        "fingerprint": "2dc27f71ab5cf9450fcbd204f1e71640",
+        "fingerprint": "0f9312f43740c77cfeabf8d66e0ba88b795160846c28647805436cc0f949a8d9f874cc0899f48c8de10dd6be688cfa280f80daacec87dad2dfd41a160f2eb89e_0",
         "is_ignored": false,
         "lines": "    open(z)",
         "message": "Unsafe open from request data",

@@ -13,7 +13,7 @@
         "offset": 447
       },
       "extra": {
-        "fingerprint": "a7a76bf6e9c43df019eefc68120a51ea",
+        "fingerprint": "a74e03e579401aaf00435c196c33a37c2fb6604f3c0d3c628458cce23b089bc9516abbf559034753be6d5abf5deda80947eeb4a6de224475ebcdda0eda2cf326_0",
         "is_ignored": false,
         "lines": "<h1>Search results for \"{{ query|safe }}\"</h1>",
         "message": "The variable '$VAR' is most likely an XSS. It originates as user input and is unsafely rendered with the '| safe' filter.",

@@ -25,7 +25,7 @@
         "offset": 31
       },
       "extra": {
-        "fingerprint": "17d63325b3c4886d897f84856ee34ea8",
+        "fingerprint": "733bfbe25905cc5916170f1cde1f9b1c054d766f64d619a4eec7ec3cdb929b4c3c6929cbbfd792fc27d9ca59bf4212b400c037637578ad8fcc789549e0da5c4c_0",
         "is_ignored": false,
         "lines": "metavariable_regex_test(\"test\")",
         "message": "Metavariable regex test",
@@ -66,7 +66,7 @@
         "offset": 66
       },
       "extra": {
-        "fingerprint": "ea27fdfbdc6ac8ac3f1475670b0f5f70",
+        "fingerprint": "ffcbd8fae9ac144c58b49710dc0c209b0f24afeeeeeb2d6047c3442f3c1eb31a7f96b0a23c938a0431dee7a67527b93c967dc6f496c5ed88236c922a7c8fd117_0",
         "is_ignored": false,
         "lines": "metavariable_regex_test(\"example\")",
         "message": "Metavariable regex test",

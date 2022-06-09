@@ -25,7 +25,7 @@
         "offset": 47
       },
       "extra": {
-        "fingerprint": "84c5ecc7623fe8c88ece8b05e9e4fe99",
+        "fingerprint": "c66e9bd5eaf94fa78caea27d2b7c5fb4fd0f5276803116824a416f8303c6f429695002a8a607427354f65c01cc3fc5afce2843bdde2a5bdfdb4c7785828d258f_0",
         "is_ignored": false,
         "lines": "boto3.client(host=\"123.123.123.123\")",
         "message": "test regex message",

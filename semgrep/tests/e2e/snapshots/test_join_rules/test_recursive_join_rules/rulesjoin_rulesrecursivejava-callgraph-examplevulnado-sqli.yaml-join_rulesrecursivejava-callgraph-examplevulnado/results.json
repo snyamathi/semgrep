@@ -13,7 +13,7 @@
         "offset": 1425
       },
       "extra": {
-        "fingerprint": "08b23cdbf02ab8ab36340f351e2bf261",
+        "fingerprint": "1a38fd84291adf640d400a33a802904e4fb79a8f4c2fbd8ac69b52111cadff584e2284cb5b53e1ad6b6a41857ab41e35dfa3e589f0c40c00ed11e644a97e7c93_0",
         "is_ignored": false,
         "lines": "      String query = \"select * from users where username = '\" + un + \"' limit 1\";",
         "message": "SQLi",

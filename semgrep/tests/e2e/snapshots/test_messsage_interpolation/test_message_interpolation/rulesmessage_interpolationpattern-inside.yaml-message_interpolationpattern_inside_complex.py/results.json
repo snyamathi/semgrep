@@ -15,7 +15,7 @@
         "offset": 44
       },
       "extra": {
-        "fingerprint": "10f4f27b7406da7d14a53ae3b843d214",
+        "fingerprint": "e9f29fec8adfa4a239e804adcac4afe68eafdb7b0ae6ba1a7b2c0504c4f9907a5d1b1c53eed9517186caadc78b2d1c66cc3acda5b25204e1ae5e4c428370ead4_0",
         "is_ignored": false,
         "lines": "    def B():\n        print(\"hey\")",
         "message": "method B is in A",
@@ -73,7 +73,7 @@
         "offset": 79
       },
       "extra": {
-        "fingerprint": "b63c624439ed0aa55765d94ecf0d23c4",
+        "fingerprint": "efd51564d03c561e08a28e9d47d22df14814895f960c2c5dce0ae601805179d275719bed28a4e98986754ef04d85dfc4e0bf43f9f514077ee7bd809aa073abd1_0",
         "is_ignored": false,
         "lines": "    def C():\n        print(\"yeh\")",
         "message": "method C is in A",
@@ -131,7 +131,7 @@
         "offset": 122
       },
       "extra": {
-        "fingerprint": "c1ee7ef310f6056ca320d41d32c06213",
+        "fingerprint": "efd51564d03c561e08a28e9d47d22df14814895f960c2c5dce0ae601805179d275719bed28a4e98986754ef04d85dfc4e0bf43f9f514077ee7bd809aa073abd1_0",
         "is_ignored": false,
         "lines": "    def C():\n        print(\"\")",
         "message": "method C is in B",

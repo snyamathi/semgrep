@@ -25,7 +25,7 @@
         "offset": 66
       },
       "extra": {
-        "fingerprint": "182c29c5e2625fe10789ab6e6480e931",
+        "fingerprint": "55f34ef03d45bb6dcb54a0315d5055a3884965f8b5ed4ed8b000b34e41124c7c721aa1c05805bdb7184ceb296cce38967bcce862325cc0a979cc79a67ad0d143_0",
         "is_ignored": false,
         "lines": "metavariable_comparison_test(100)",
         "message": "Metavariable regex test",

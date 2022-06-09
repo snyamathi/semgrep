@@ -15,7 +15,7 @@
         "offset": 109
       },
       "extra": {
-        "fingerprint": "af6f45fadea8519a2d6f32290d736b56",
+        "fingerprint": "82363d142369cbcb7a499881a6e5dee4452f0928932743d197b5746d2a13f9119a2972010197366de2234bb6cf39e567d9f5886e34f4af93111548ae79b92574_0",
         "fix_regex": {
           "regex": "(.*)\\}",
           "replacement": "\\1\n  metadata_options {\n    http_tokens = \"required\"\n  }\n}\n"
@@ -70,7 +70,7 @@
         "offset": 220
       },
       "extra": {
-        "fingerprint": "3451d8296c78502b4db338ff0cfdcedf",
+        "fingerprint": "82363d142369cbcb7a499881a6e5dee4452f0928932743d197b5746d2a13f9119a2972010197366de2234bb6cf39e567d9f5886e34f4af93111548ae79b92574_0",
         "fix_regex": {
           "regex": "(.*)\\}",
           "replacement": "\\1\n  metadata_options {\n    http_tokens = \"required\"\n  }\n}\n"
