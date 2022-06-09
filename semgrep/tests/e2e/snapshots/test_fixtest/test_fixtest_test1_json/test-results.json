@@ -1,20 +1,31 @@
 {
-  "config_missing_fixtests": [],
-  "config_missing_tests": [],
-  "config_with_errors": [],
-  "fixtest_results": {
-    "targets/fixtest/test1.py": {
-      "passed": true
-    }
-  },
-  "results": {
-    "rules/fixtest/test1.yaml": {
-      "checks": {
-        "test1": {
-          "matches": "<masked in tests>",
-          "passed": true
+    "config_missing_tests": [],
+    "config_missing_fixtests": [],
+    "config_with_errors": [],
+    "results": {
+        "rules/fixtest/test1.yaml": {
+            "checks": {
+                "test1": {
+                    "passed": true,
+                    "matches": {
+                        "/home/runner/work/semgrep/semgrep/semgrep/tests/e2e/targets/fixtest/test1.py": {
+                            "expected_lines": [
+                                2,
+                                5
+                            ],
+                            "reported_lines": [
+                                2,
+                                5
+                            ]
+                        }
+                    }
+                }
+            }
         }
-      }
+    },
+    "fixtest_results": {
+        "targets/fixtest/test1.py": {
+            "passed": true
+        }
     }
-  }
 }
