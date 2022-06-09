@@ -44,7 +44,7 @@ jobs:
   build-core:
     name: build semgrep-core
     runs-on: ubuntu-latest
-    container: returntocorp/ocaml:alpine
+    container: returntocorp/ocaml:alpine-2022-04-14
     needs: [restore-core-cache]
     if: needs.restore-core-cache.outputs.hit != 'true'
     steps:
@@ -175,7 +175,7 @@ jobs:
   test-core:
     name: test semgrep-core
     runs-on: ubuntu-latest
-    container: returntocorp/ocaml:alpine
+    container: returntocorp/ocaml:alpine-2022-04-14
     needs: [build-core] # save some CPU time by waiting till build cache is populated in that job
     steps:
       - name: Install pipenv
