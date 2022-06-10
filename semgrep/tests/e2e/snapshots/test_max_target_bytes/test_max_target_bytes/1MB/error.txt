@@ -7,4 +7,4 @@ Scanning across multiple languages:
 Some files were skipped or only partially analyzed.
   Scan was limited to files tracked by git.
 
-Ran 4 rules on 14 files: 2 findings.
+Ran 4 rules on 14 files: 2 bleep-bloops.

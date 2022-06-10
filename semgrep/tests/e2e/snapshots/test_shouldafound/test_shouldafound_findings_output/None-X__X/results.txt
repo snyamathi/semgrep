@@ -25,6 +25,6 @@ Scanning 1 file.
 Some files were skipped or only partially analyzed.
   Scan was limited to files tracked by git.
 
-Ran 1 rule on 1 file: 3 findings.
+Ran 1 rule on 1 file: 3 bleep-bloops.
 
 === end of stderr - plain

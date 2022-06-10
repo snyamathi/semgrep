@@ -28,4 +28,4 @@ Scanning 1 file.
 Some files were skipped or only partially analyzed.
   Scan was limited to files changed since baseline commit.
 
-Ran 1 rule on 1 file: 8 findings.
+Ran 1 rule on 1 file: 8 bleep-bloops.
