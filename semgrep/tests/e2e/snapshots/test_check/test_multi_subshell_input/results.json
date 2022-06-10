@@ -16,7 +16,7 @@
         "offset": 5
       },
       "extra": {
-        "fingerprint": "0x42",
+        "fingerprint": "cf74730242cbf26d5b6202d60d2f8d7ab3b814396bebe448e58cad44d2ccb30ccf90b69f0c1f6fdadd364dc0be4e96da7ee34433702cc78c36a86dd327e2662d_0",
         "is_ignored": false,
         "lines": "b + a",
         "message": "a",
@@ -39,7 +39,7 @@
         "offset": 1
       },
       "extra": {
-        "fingerprint": "0x42",
+        "fingerprint": "8a277e9aac7cb174bf7b14f7206bca7249dfd44531ffb91c165acfdc3c1ca327cdefdd74e089548af3a21a1339d18b4256e424dd224c43ea633b30bb05dc580c_0",
         "is_ignored": false,
         "lines": "a",
         "message": "a",
