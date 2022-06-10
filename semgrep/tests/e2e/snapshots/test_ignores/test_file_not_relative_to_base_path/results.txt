@@ -24,7 +24,7 @@ SEMGREP_USER_AGENT_APPEND="pytest" SEMGREP_SETTINGS_FILE="<MASKED>" SEMGREP_VERS
         "offset": 1
       },
       "extra": {
-        "fingerprint": "0x42",
+        "fingerprint": "5f644832d574af565a0ef220e55ffd369f0e47f89ad1c9040e5f01920eb67abfc2dde371b07357d2932022642487ea02a8798b8fce2e1e3551de1d49d1848413_0",
         "is_ignored": false,
         "lines": "a",
         "message": "a",
