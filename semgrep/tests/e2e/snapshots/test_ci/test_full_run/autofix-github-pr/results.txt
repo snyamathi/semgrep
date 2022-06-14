@@ -3,35 +3,10 @@ CI="true" GITHUB_ACTIONS="true" GITHUB_EVENT_NAME="pull_request" GITHUB_REPOSITO
 === end of command
 
 === exit code
-1
+2
 === end of exit code
 
 === stdout - plain
-
-Findings:
-
-  foo.py 
-     eqeq-bad
-        useless comparison
-
-          4┆ a == a
-          ⋮┆----------------------------------------
-          5┆ a == a
-          ⋮┆----------------------------------------
-          7┆ a == a
-          ⋮┆----------------------------------------
-         11┆ y == y
-          ⋮┆----------------------------------------
-     eqeq-five
-        useless comparison to 5
-
-         ▶▶┆ Autofix ▶ x == 2
-         15┆ x == 2
-          ⋮┆----------------------------------------
-     eqeq-four
-        useless comparison to 4
-
-         19┆ baz == 4
 
 === end of stdout - plain
 
@@ -41,26 +16,24 @@ Scan environment:
   environment - running in environment github-actions, triggering event is pull_request
   semgrep.dev - authenticated as org_name
 
-Fixing git state for github action pull request
-Fetching configuration from semgrep.dev
-Adding ignore patterns configured on semgrep.dev as `--exclude` options: ()
-Fetching rules from https://semgrep.dev/registry.
-Scanning 1 file with 4 python rules.
-  Current version has 12 findings.
-
-Switching repository to baseline commit '<MASKED>'.
-  Will report findings introduced by these commits:
-    * <MASKED> Some other commit/ message
-
-Scanning 1 file with 4 python rules.
-Returning to original head revision <MASKED>
-
-Some files were skipped or only partially analyzed.
-  Scan was limited to files changed since baseline commit.
-
-CI scan completed successfully.
-  Found 6 findings (5 blocking) from 3 rules.
-  Uploading findings to Semgrep App.
-  Has findings for blocking rules so exiting with code 1
+Command '['git', 'fetch', 'origin', '--depth', '1', '-fu', 'some/branch-name:some/branch-name']' returned non-zero exit status 128.
+Traceback (most recent call last):
+  File "/home/runner/work/semgrep/semgrep/semgrep/semgrep/commands/wrapper.py", line 35, in wrapper
+    func(*args, **kwargs)
+  File "/home/runner/work/semgrep/semgrep/semgrep/semgrep/commands/ci.py", line 306, in ci
+    with fix_head_if_github_action(metadata):
+  File "/opt/hostedtoolcache/Python/3.9.13/x64/lib/python3.9/contextlib.py", line 119, in __enter__
+    return next(self.gen)
+  File "/home/runner/work/semgrep/semgrep/semgrep/semgrep/commands/ci.py", line 83, in fix_head_if_github_action
+    assert metadata.head_branch_hash is not None  # Not none when github action PR
+  File "/home/runner/.local/share/virtualenvs/semgrep-GqZ0EjEI/lib/python3.9/site-packages/boltons/cacheutils.py", line 641, in __get__
+    value = obj.__dict__[self.func.__name__] = self.func(obj)
+  File "/home/runner/work/semgrep/semgrep/semgrep/semgrep/meta.py", line 250, in head_branch_hash
+    commit = self._get_latest_commit_hash_in_branch(head_branch_name)
+  File "/home/runner/work/semgrep/semgrep/semgrep/semgrep/meta.py", line 218, in _get_latest_commit_hash_in_branch
+    process = subprocess.run(
+  File "/opt/hostedtoolcache/Python/3.9.13/x64/lib/python3.9/subprocess.py", line 528, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'fetch', 'origin', '--depth', '1', '-fu', 'some/branch-name:some/branch-name']' returned non-zero exit status 128.
 
 === end of stderr - plain
