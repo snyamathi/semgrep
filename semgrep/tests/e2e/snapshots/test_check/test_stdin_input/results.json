@@ -1,35 +1,19 @@
 {
-  "errors": [],
+  "errors": [
+    {
+      "code": 2,
+      "level": "error",
+      "message": "[ERROR] Fatal error at line /tmp/tmpbpoqe6co/stdin:1:\n Unix.Unix_error(Unix.ENOENT, \"mkdir\", \"/home/pad/.semgrep/cache\")\n====[ BEGIN error trace ]====\nRaised by primitive operation at Parse_with_caching.cache_file_of_file in file \"src/runner/Parse_with_caching.ml\", line 71, characters 36-56\nCalled from Parse_with_caching.cache_computation in file \"src/runner/Parse_with_caching.ml\", line 44, characters 21-44\nCalled from Parse_with_caching.parse_and_resolve_name in file \"src/runner/Parse_with_caching.ml\", line 83, characters 4-1023\nCalled from CamlinternalLazy.force_lazy_block in file \"camlinternalLazy.ml\", line 31, characters 17-27\nRe-raised at CamlinternalLazy.force_lazy_block in file \"camlinternalLazy.ml\", line 36, characters 4-11\nCalled from Common.with_time in file \"src/pfff/commons/Common.ml\", line 215, characters 12-16\nCalled from Match_search_mode.matches_of_patterns in file \"src/engine/Match_search_mode.ml\", line 217, characters 8-67\nCalled from Match_search_mode.matches_of_xpatterns in file \"src/engine/Match_search_mode.ml\", line 323, characters 6-55\nCalled from Match_search_mode.matches_of_formula in file \"src/engine/Match_search_mode.ml\", line 543, characters 12-57\nCalled from Match_search_mode.check_rule in file \"src/engine/Match_search_mode.ml\", line 573, characters 4-62\nCalled from Common.set_timeout in file \"src/pfff/commons/Common.ml\", line 1438, characters 12-16\nRe-raised at Common.set_timeout in file \"src/pfff/commons/Common.ml\", line 1455, characters 6-13\nCalled from Match_rules.timeout_function in file \"src/engine/Match_rules.ml\", line 45, characters 4-73\nCalled from Match_rules.check.(fun) in file \"src/engine/Match_rules.ml\", line 105, characters 19-790\nCalled from Common.partition_either.part_either in file \"src/pfff/commons/Common.ml\", line 973, characters 15-18\nCalled from Match_rules.check in file \"src/engine/Match_rules.ml\", line 85, characters 4-1023\nCalled from Run_semgrep.semgrep_with_rules.(fun) in file \"src/runner/Run_semgrep.ml\", line 506, characters 13-265\nCalled from Run_semgrep.iter_targets_and_get_matches_and_exn_to_errors.(fun) in file \"src/runner/Run_semgrep.ml\", line 316, characters 21-29\nCalled from Stdlib__Fun.protect in file \"fun.ml\", line 33, characters 8-15\nRe-raised at Stdlib__Fun.protect in file \"fun.ml\", line 38, characters 6-52\nCalled from Memory_limit.run_with_memory_limit in file \"src/system/Memory_limit.ml\", line 83, characters 6-62\nCalled from Run_semgrep.iter_targets_and_get_matches_and_exn_to_errors.(fun) in file \"src/runner/Run_semgrep.ml\", line 307, characters 17-1023\n=====[ END error trace ]=====\n",
+      "path": "/tmp/tmpbpoqe6co/stdin",
+      "type": "Fatal error"
+    }
+  ],
   "paths": {
     "_comment": "<add --verbose for a list of skipped paths>",
     "scanned": [
       "/tmp/masked/path"
     ]
   },
-  "results": [
-    {
-      "check_id": "-",
-      "end": {
-        "col": 2,
-        "line": 1,
-        "offset": 1
-      },
-      "extra": {
-        "fingerprint": "0x42",
-        "is_ignored": false,
-        "lines": "a",
-        "message": "a",
-        "metadata": {},
-        "metavars": {},
-        "severity": "ERROR"
-      },
-      "path": "/tmp/masked/path",
-      "start": {
-        "col": 1,
-        "line": 1,
-        "offset": 0
-      }
-    }
-  ],
+  "results": [],
   "version": "0.42"
 }
