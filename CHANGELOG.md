@@ -37,6 +37,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
   files not changed in the PR (#5453)
 - Python: correctly handle `with` context expressions where the value is not
   bound (#5513)
+- JS/TS: `$X()` no longer matches `new Foo()`, for consistency with other languages (#5510)
+
 
 ## [0.97.0](https://github.com/returntocorp/semgrep/releases/tag/v0.97.0) - 2022-06-08
 
