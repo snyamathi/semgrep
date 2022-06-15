@@ -35,6 +35,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Fixed a non-deterministic crash when matching a large number of regexes (#5277)
 - Fixed issue when running in GithubActions that caused semgrep to report on
   files not changed in the PR (#5453)
+- Python: correctly handle `with` context expressions where the value is not
+  bound (#5513)
 
 ## [0.97.0](https://github.com/returntocorp/semgrep/releases/tag/v0.97.0) - 2022-06-08
 
