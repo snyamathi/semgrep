@@ -1,5 +1,34 @@
 {
-  "errors": [],
+  "errors": [
+    {
+      "code": 2,
+      "level": "error",
+      "message": "[ERROR] Fatal error at line targets/exclude_include/included/included.js:1:\n Unix.Unix_error(Unix.ENOENT, \"mkdir\", \"/home/pad/.semgrep/cache\")\n====[ BEGIN error trace ]====\nRaised by primitive operation at Parse_with_caching.cache_file_of_file in file \"src/runner/Parse_with_caching.ml\", line 71, characters 36-56\nCalled from Parse_with_caching.cache_computation in file \"src/runner/Parse_with_caching.ml\", line 44, characters 21-44\nCalled from Parse_with_caching.parse_and_resolve_name in file \"src/runner/Parse_with_caching.ml\", line 83, characters 4-1023\nCalled from CamlinternalLazy.force_lazy_block in file \"camlinternalLazy.ml\", line 31, characters 17-27\nRe-raised at CamlinternalLazy.force_lazy_block in file \"camlinternalLazy.ml\", line 36, characters 4-11\nCalled from Common.with_time in file \"src/pfff/commons/Common.ml\", line 215, characters 12-16\nCalled from Match_search_mode.matches_of_patterns in file \"src/engine/Match_search_mode.ml\", line 217, characters 8-67\nCalled from Match_search_mode.matches_of_xpatterns in file \"src/engine/Match_search_mode.ml\", line 323, characters 6-55\nCalled from Match_search_mode.matches_of_formula in file \"src/engine/Match_search_mode.ml\", line 543, characters 12-57\nCalled from Match_search_mode.check_rule in file \"src/engine/Match_search_mode.ml\", line 573, characters 4-62\nCalled from Common.set_timeout in file \"src/pfff/commons/Common.ml\", line 1438, characters 12-16\nRe-raised at Common.set_timeout in file \"src/pfff/commons/Common.ml\", line 1455, characters 6-13\nCalled from Match_rules.timeout_function in file \"src/engine/Match_rules.ml\", line 45, characters 4-73\nCalled from Match_rules.check.(fun) in file \"src/engine/Match_rules.ml\", line 105, characters 19-790\nCalled from Common.partition_either.part_either in file \"src/pfff/commons/Common.ml\", line 973, characters 15-18\nCalled from Match_rules.check in file \"src/engine/Match_rules.ml\", line 85, characters 4-1023\nCalled from Run_semgrep.semgrep_with_rules.(fun) in file \"src/runner/Run_semgrep.ml\", line 506, characters 13-265\nCalled from Run_semgrep.iter_targets_and_get_matches_and_exn_to_errors.(fun) in file \"src/runner/Run_semgrep.ml\", line 316, characters 21-29\nCalled from Stdlib__Fun.protect in file \"fun.ml\", line 33, characters 8-15\nRe-raised at Stdlib__Fun.protect in file \"fun.ml\", line 38, characters 6-52\nCalled from Memory_limit.run_with_memory_limit in file \"src/system/Memory_limit.ml\", line 83, characters 6-62\nCalled from Run_semgrep.iter_targets_and_get_matches_and_exn_to_errors.(fun) in file \"src/runner/Run_semgrep.ml\", line 307, characters 17-1023\n=====[ END error trace ]=====\n",
+      "path": "targets/exclude_include/included/included.js",
+      "type": "Fatal error"
+    },
+    {
+      "code": 2,
+      "level": "error",
+      "message": "[ERROR] Fatal error at line targets/exclude_include/included/excluded.js:1:\n Unix.Unix_error(Unix.ENOENT, \"mkdir\", \"/home/pad/.semgrep/cache\")\n====[ BEGIN error trace ]====\nRaised by primitive operation at Parse_with_caching.cache_file_of_file in file \"src/runner/Parse_with_caching.ml\", line 71, characters 36-56\nCalled from Parse_with_caching.cache_computation in file \"src/runner/Parse_with_caching.ml\", line 44, characters 21-44\nCalled from Parse_with_caching.parse_and_resolve_name in file \"src/runner/Parse_with_caching.ml\", line 83, characters 4-1023\nCalled from CamlinternalLazy.force_lazy_block in file \"camlinternalLazy.ml\", line 31, characters 17-27\nRe-raised at CamlinternalLazy.force_lazy_block in file \"camlinternalLazy.ml\", line 36, characters 4-11\nCalled from Common.with_time in file \"src/pfff/commons/Common.ml\", line 215, characters 12-16\nCalled from Match_search_mode.matches_of_patterns in file \"src/engine/Match_search_mode.ml\", line 217, characters 8-67\nCalled from Match_search_mode.matches_of_xpatterns in file \"src/engine/Match_search_mode.ml\", line 323, characters 6-55\nCalled from Match_search_mode.matches_of_formula in file \"src/engine/Match_search_mode.ml\", line 543, characters 12-57\nCalled from Match_search_mode.check_rule in file \"src/engine/Match_search_mode.ml\", line 573, characters 4-62\nCalled from Common.set_timeout in file \"src/pfff/commons/Common.ml\", line 1438, characters 12-16\nRe-raised at Common.set_timeout in file \"src/pfff/commons/Common.ml\", line 1455, characters 6-13\nCalled from Match_rules.timeout_function in file \"src/engine/Match_rules.ml\", line 45, characters 4-73\nCalled from Match_rules.check.(fun) in file \"src/engine/Match_rules.ml\", line 105, characters 19-790\nCalled from Common.partition_either.part_either in file \"src/pfff/commons/Common.ml\", line 973, characters 15-18\nCalled from Match_rules.check in file \"src/engine/Match_rules.ml\", line 85, characters 4-1023\nCalled from Run_semgrep.semgrep_with_rules.(fun) in file \"src/runner/Run_semgrep.ml\", line 506, characters 13-265\nCalled from Run_semgrep.iter_targets_and_get_matches_and_exn_to_errors.(fun) in file \"src/runner/Run_semgrep.ml\", line 316, characters 21-29\nCalled from Stdlib__Fun.protect in file \"fun.ml\", line 33, characters 8-15\nRe-raised at Stdlib__Fun.protect in file \"fun.ml\", line 38, characters 6-52\nCalled from Memory_limit.run_with_memory_limit in file \"src/system/Memory_limit.ml\", line 83, characters 6-62\nCalled from Run_semgrep.iter_targets_and_get_matches_and_exn_to_errors.(fun) in file \"src/runner/Run_semgrep.ml\", line 307, characters 17-1023\n=====[ END error trace ]=====\n",
+      "path": "targets/exclude_include/included/excluded.js",
+      "type": "Fatal error"
+    },
+    {
+      "code": 2,
+      "level": "error",
+      "message": "[ERROR] Fatal error at line targets/exclude_include/excluded/included.js:1:\n Unix.Unix_error(Unix.ENOENT, \"mkdir\", \"/home/pad/.semgrep/cache\")\n====[ BEGIN error trace ]====\nRaised by primitive operation at Parse_with_caching.cache_file_of_file in file \"src/runner/Parse_with_caching.ml\", line 71, characters 36-56\nCalled from Parse_with_caching.cache_computation in file \"src/runner/Parse_with_caching.ml\", line 44, characters 21-44\nCalled from Parse_with_caching.parse_and_resolve_name in file \"src/runner/Parse_with_caching.ml\", line 83, characters 4-1023\nCalled from CamlinternalLazy.force_lazy_block in file \"camlinternalLazy.ml\", line 31, characters 17-27\nRe-raised at CamlinternalLazy.force_lazy_block in file \"camlinternalLazy.ml\", line 36, characters 4-11\nCalled from Common.with_time in file \"src/pfff/commons/Common.ml\", line 215, characters 12-16\nCalled from Match_search_mode.matches_of_patterns in file \"src/engine/Match_search_mode.ml\", line 217, characters 8-67\nCalled from Match_search_mode.matches_of_xpatterns in file \"src/engine/Match_search_mode.ml\", line 323, characters 6-55\nCalled from Match_search_mode.matches_of_formula in file \"src/engine/Match_search_mode.ml\", line 543, characters 12-57\nCalled from Match_search_mode.check_rule in file \"src/engine/Match_search_mode.ml\", line 573, characters 4-62\nCalled from Common.set_timeout in file \"src/pfff/commons/Common.ml\", line 1438, characters 12-16\nRe-raised at Common.set_timeout in file \"src/pfff/commons/Common.ml\", line 1455, characters 6-13\nCalled from Match_rules.timeout_function in file \"src/engine/Match_rules.ml\", line 45, characters 4-73\nCalled from Match_rules.check.(fun) in file \"src/engine/Match_rules.ml\", line 105, characters 19-790\nCalled from Common.partition_either.part_either in file \"src/pfff/commons/Common.ml\", line 973, characters 15-18\nCalled from Match_rules.check in file \"src/engine/Match_rules.ml\", line 85, characters 4-1023\nCalled from Run_semgrep.semgrep_with_rules.(fun) in file \"src/runner/Run_semgrep.ml\", line 506, characters 13-265\nCalled from Run_semgrep.iter_targets_and_get_matches_and_exn_to_errors.(fun) in file \"src/runner/Run_semgrep.ml\", line 316, characters 21-29\nCalled from Stdlib__Fun.protect in file \"fun.ml\", line 33, characters 8-15\nRe-raised at Stdlib__Fun.protect in file \"fun.ml\", line 38, characters 6-52\nCalled from Memory_limit.run_with_memory_limit in file \"src/system/Memory_limit.ml\", line 83, characters 6-62\nCalled from Run_semgrep.iter_targets_and_get_matches_and_exn_to_errors.(fun) in file \"src/runner/Run_semgrep.ml\", line 307, characters 17-1023\n=====[ END error trace ]=====\n",
+      "path": "targets/exclude_include/excluded/included.js",
+      "type": "Fatal error"
+    },
+    {
+      "code": 2,
+      "level": "error",
+      "message": "[ERROR] Fatal error at line targets/exclude_include/excluded/excluded.js:1:\n Unix.Unix_error(Unix.ENOENT, \"mkdir\", \"/home/pad/.semgrep/cache\")\n====[ BEGIN error trace ]====\nRaised by primitive operation at Parse_with_caching.cache_file_of_file in file \"src/runner/Parse_with_caching.ml\", line 71, characters 36-56\nCalled from Parse_with_caching.cache_computation in file \"src/runner/Parse_with_caching.ml\", line 44, characters 21-44\nCalled from Parse_with_caching.parse_and_resolve_name in file \"src/runner/Parse_with_caching.ml\", line 83, characters 4-1023\nCalled from CamlinternalLazy.force_lazy_block in file \"camlinternalLazy.ml\", line 31, characters 17-27\nRe-raised at CamlinternalLazy.force_lazy_block in file \"camlinternalLazy.ml\", line 36, characters 4-11\nCalled from Common.with_time in file \"src/pfff/commons/Common.ml\", line 215, characters 12-16\nCalled from Match_search_mode.matches_of_patterns in file \"src/engine/Match_search_mode.ml\", line 217, characters 8-67\nCalled from Match_search_mode.matches_of_xpatterns in file \"src/engine/Match_search_mode.ml\", line 323, characters 6-55\nCalled from Match_search_mode.matches_of_formula in file \"src/engine/Match_search_mode.ml\", line 543, characters 12-57\nCalled from Match_search_mode.check_rule in file \"src/engine/Match_search_mode.ml\", line 573, characters 4-62\nCalled from Common.set_timeout in file \"src/pfff/commons/Common.ml\", line 1438, characters 12-16\nRe-raised at Common.set_timeout in file \"src/pfff/commons/Common.ml\", line 1455, characters 6-13\nCalled from Match_rules.timeout_function in file \"src/engine/Match_rules.ml\", line 45, characters 4-73\nCalled from Match_rules.check.(fun) in file \"src/engine/Match_rules.ml\", line 105, characters 19-790\nCalled from Common.partition_either.part_either in file \"src/pfff/commons/Common.ml\", line 973, characters 15-18\nCalled from Match_rules.check in file \"src/engine/Match_rules.ml\", line 85, characters 4-1023\nCalled from Run_semgrep.semgrep_with_rules.(fun) in file \"src/runner/Run_semgrep.ml\", line 506, characters 13-265\nCalled from Run_semgrep.iter_targets_and_get_matches_and_exn_to_errors.(fun) in file \"src/runner/Run_semgrep.ml\", line 316, characters 21-29\nCalled from Stdlib__Fun.protect in file \"fun.ml\", line 33, characters 8-15\nRe-raised at Stdlib__Fun.protect in file \"fun.ml\", line 38, characters 6-52\nCalled from Memory_limit.run_with_memory_limit in file \"src/system/Memory_limit.ml\", line 83, characters 6-62\nCalled from Run_semgrep.iter_targets_and_get_matches_and_exn_to_errors.(fun) in file \"src/runner/Run_semgrep.ml\", line 307, characters 17-1023\n=====[ END error trace ]=====\n",
+      "path": "targets/exclude_include/excluded/excluded.js",
+      "type": "Fatal error"
+    }
+  ],
   "paths": {
     "_comment": "<add --verbose for a list of skipped paths>",
     "scanned": [
@@ -9,223 +38,6 @@
       "targets/exclude_include/included/included.js"
     ]
   },
-  "results": [
-    {
-      "check_id": "rules.javascript-basic-eqeq-bad",
-      "end": {
-        "col": 19,
-        "line": 3,
-        "offset": 30
-      },
-      "extra": {
-        "fingerprint": "6c74951bb5b578ad9607e890863062eeaf4240acb7380a8ad12015e8628ae12d53561235afb7c61cdae59ed53f3cf3fa9ab43db739357a0e3a6488e6d16bf05f_0",
-        "is_ignored": false,
-        "lines": "console.log(x == x)",
-        "message": "useless comparison",
-        "metadata": {},
-        "metavars": {
-          "$X": {
-            "abstract_content": "x",
-            "end": {
-              "col": 14,
-              "line": 3,
-              "offset": 25
-            },
-            "propagated_value": {
-              "svalue_abstract_content": "1",
-              "svalue_end": {
-                "col": 10,
-                "line": 1,
-                "offset": 9
-              },
-              "svalue_start": {
-                "col": 9,
-                "line": 1,
-                "offset": 8
-              }
-            },
-            "start": {
-              "col": 13,
-              "line": 3,
-              "offset": 24
-            },
-            "unique_id": {
-              "sid": 1,
-              "type": "id"
-            }
-          }
-        },
-        "severity": "ERROR"
-      },
-      "path": "targets/exclude_include/excluded/excluded.js",
-      "start": {
-        "col": 13,
-        "line": 3,
-        "offset": 24
-      }
-    },
-    {
-      "check_id": "rules.javascript-basic-eqeq-bad",
-      "end": {
-        "col": 19,
-        "line": 3,
-        "offset": 30
-      },
-      "extra": {
-        "fingerprint": "a04d2ea34b071cb8607b282419957c8a986ce82ada5717efa1315dde21ec6529b183f409996b1e150512a600af8a50bd28249e73f1950928cb8e1c0408dae54b_0",
-        "is_ignored": false,
-        "lines": "console.log(x == x)",
-        "message": "useless comparison",
-        "metadata": {},
-        "metavars": {
-          "$X": {
-            "abstract_content": "x",
-            "end": {
-              "col": 14,
-              "line": 3,
-              "offset": 25
-            },
-            "propagated_value": {
-              "svalue_abstract_content": "1",
-              "svalue_end": {
-                "col": 10,
-                "line": 1,
-                "offset": 9
-              },
-              "svalue_start": {
-                "col": 9,
-                "line": 1,
-                "offset": 8
-              }
-            },
-            "start": {
-              "col": 13,
-              "line": 3,
-              "offset": 24
-            },
-            "unique_id": {
-              "sid": 1,
-              "type": "id"
-            }
-          }
-        },
-        "severity": "ERROR"
-      },
-      "path": "targets/exclude_include/excluded/included.js",
-      "start": {
-        "col": 13,
-        "line": 3,
-        "offset": 24
-      }
-    },
-    {
-      "check_id": "rules.javascript-basic-eqeq-bad",
-      "end": {
-        "col": 19,
-        "line": 3,
-        "offset": 30
-      },
-      "extra": {
-        "fingerprint": "16132d11e4b60d4197683a30924905378ca33f8bc0a13dc2086391434650bc0c4185c262198a74f678d595ed9affad330af03e89111b4bb948fc396c796b4fcc_0",
-        "is_ignored": false,
-        "lines": "console.log(x == x)",
-        "message": "useless comparison",
-        "metadata": {},
-        "metavars": {
-          "$X": {
-            "abstract_content": "x",
-            "end": {
-              "col": 14,
-              "line": 3,
-              "offset": 25
-            },
-            "propagated_value": {
-              "svalue_abstract_content": "1",
-              "svalue_end": {
-                "col": 10,
-                "line": 1,
-                "offset": 9
-              },
-              "svalue_start": {
-                "col": 9,
-                "line": 1,
-                "offset": 8
-              }
-            },
-            "start": {
-              "col": 13,
-              "line": 3,
-              "offset": 24
-            },
-            "unique_id": {
-              "sid": 1,
-              "type": "id"
-            }
-          }
-        },
-        "severity": "ERROR"
-      },
-      "path": "targets/exclude_include/included/excluded.js",
-      "start": {
-        "col": 13,
-        "line": 3,
-        "offset": 24
-      }
-    },
-    {
-      "check_id": "rules.javascript-basic-eqeq-bad",
-      "end": {
-        "col": 19,
-        "line": 3,
-        "offset": 30
-      },
-      "extra": {
-        "fingerprint": "f0dc6bb763a65d736f8476d961bbc2ded9a4659fac904e481df30f95e4a5c5ef6f71d9117c3bfe66de807451c98165fb31330d437b1a0130bddb2ec6318d6a63_0",
-        "is_ignored": false,
-        "lines": "console.log(x == x)",
-        "message": "useless comparison",
-        "metadata": {},
-        "metavars": {
-          "$X": {
-            "abstract_content": "x",
-            "end": {
-              "col": 14,
-              "line": 3,
-              "offset": 25
-            },
-            "propagated_value": {
-              "svalue_abstract_content": "1",
-              "svalue_end": {
-                "col": 10,
-                "line": 1,
-                "offset": 9
-              },
-              "svalue_start": {
-                "col": 9,
-                "line": 1,
-                "offset": 8
-              }
-            },
-            "start": {
-              "col": 13,
-              "line": 3,
-              "offset": 24
-            },
-            "unique_id": {
-              "sid": 1,
-              "type": "id"
-            }
-          }
-        },
-        "severity": "ERROR"
-      },
-      "path": "targets/exclude_include/included/included.js",
-      "start": {
-        "col": 13,
-        "line": 3,
-        "offset": 24
-      }
-    }
-  ],
+  "results": [],
   "version": "0.42"
 }

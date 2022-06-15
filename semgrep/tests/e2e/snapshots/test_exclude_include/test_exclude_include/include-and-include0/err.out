@@ -2,5 +2,6 @@ Scanning 4 files.
 
 Some files were skipped or only partially analyzed.
   Scan was limited to files tracked by git.
+  Partially scanned: 4 files only partially analyzed due to a parsing or internal Semgrep error
 
-Ran 4 rules on 4 files: 4 findings.
+Ran 4 rules on 4 files: 0 findings.

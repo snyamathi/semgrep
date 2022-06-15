@@ -3,7 +3,7 @@ SEMGREP_APP_TOKEN="fake_key" SEMGREP_USER_AGENT_APPEND="pytest" SEMGREP_SETTINGS
 === end of command
 
 === exit code
-1
+2
 === end of exit code
 
 === stdout - plain
@@ -14,311 +14,20 @@ SEMGREP_APP_TOKEN="fake_key" SEMGREP_USER_AGENT_APPEND="pytest" SEMGREP_SETTINGS
       "invocations": [
         {
           "executionSuccessful": true,
-          "toolExecutionNotifications": []
-        }
-      ],
-      "results": [
-        {
-          "locations": [
+          "toolExecutionNotifications": [
             {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "foo.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "endColumn": 11,
-                  "endLine": 4,
-                  "snippet": {
-                    "text": "    a == a"
-                  },
-                  "startColumn": 5,
-                  "startLine": 4
-                }
+              "descriptor": {
+                "id": "Fatal error"
+              },
+              "level": "error",
+              "message": {
+                "text": "[ERROR] Fatal error at line foo.py:1:\n Unix.Unix_error(Unix.ENOENT, \"mkdir\", \"/home/pad/.semgrep/cache\")\n====[ BEGIN error trace ]====\nRaised by primitive operation at Parse_with_caching.cache_file_of_file in file \"src/runner/Parse_with_caching.ml\", line 71, characters 36-56\nCalled from Parse_with_caching.cache_computation in file \"src/runner/Parse_with_caching.ml\", line 44, characters 21-44\nCalled from Parse_with_caching.parse_and_resolve_name in file \"src/runner/Parse_with_caching.ml\", line 83, characters 4-1023\nCalled from CamlinternalLazy.force_lazy_block in file \"camlinternalLazy.ml\", line 31, characters 17-27\nRe-raised at CamlinternalLazy.force_lazy_block in file \"camlinternalLazy.ml\", line 36, characters 4-11\nCalled from Common.with_time in file \"src/pfff/commons/Common.ml\", line 215, characters 12-16\nCalled from Match_search_mode.matches_of_patterns in file \"src/engine/Match_search_mode.ml\", line 217, characters 8-67\nCalled from Match_search_mode.matches_of_xpatterns in file \"src/engine/Match_search_mode.ml\", line 323, characters 6-55\nCalled from Match_search_mode.matches_of_formula in file \"src/engine/Match_search_mode.ml\", line 543, characters 12-57\nCalled from Match_search_mode.check_rule in file \"src/engine/Match_search_mode.ml\", line 573, characters 4-62\nCalled from Common.set_timeout in file \"src/pfff/commons/Common.ml\", line 1438, characters 12-16\nRe-raised at Common.set_timeout in file \"src/pfff/commons/Common.ml\", line 1455, characters 6-13\nCalled from Match_rules.timeout_function in file \"src/engine/Match_rules.ml\", line 45, characters 4-73\nCalled from Match_rules.check.(fun) in file \"src/engine/Match_rules.ml\", line 105, characters 19-790\nCalled from Common.partition_either.part_either in file \"src/pfff/commons/Common.ml\", line 973, characters 15-18\nCalled from Match_rules.check in file \"src/engine/Match_rules.ml\", line 85, characters 4-1023\nCalled from Run_semgrep.semgrep_with_rules.(fun) in file \"src/runner/Run_semgrep.ml\", line 506, characters 13-265\nCalled from Run_semgrep.iter_targets_and_get_matches_and_exn_to_errors.(fun) in file \"src/runner/Run_semgrep.ml\", line 316, characters 21-29\nCalled from Stdlib__Fun.protect in file \"fun.ml\", line 33, characters 8-15\nRe-raised at Stdlib__Fun.protect in file \"fun.ml\", line 38, characters 6-52\nCalled from Memory_limit.run_with_memory_limit in file \"src/system/Memory_limit.ml\", line 83, characters 6-62\nCalled from Run_semgrep.iter_targets_and_get_matches_and_exn_to_errors.(fun) in file \"src/runner/Run_semgrep.ml\", line 307, characters 17-1023\n=====[ END error trace ]=====\n"
               }
-            }
-          ],
-          "message": {
-            "text": "useless comparison"
-          },
-          "ruleId": "eqeq-bad"
-        },
-        {
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "foo.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "endColumn": 11,
-                  "endLine": 5,
-                  "snippet": {
-                    "text": "    a == a"
-                  },
-                  "startColumn": 5,
-                  "startLine": 5
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "useless comparison"
-          },
-          "ruleId": "eqeq-bad"
-        },
-        {
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "foo.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "endColumn": 11,
-                  "endLine": 6,
-                  "snippet": {
-                    "text": "    a == a  # nosemgrep"
-                  },
-                  "startColumn": 5,
-                  "startLine": 6
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "useless comparison"
-          },
-          "ruleId": "eqeq-bad",
-          "suppressions": [
-            {
-              "kind": "inSource"
-            }
-          ]
-        },
-        {
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "foo.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "endColumn": 11,
-                  "endLine": 7,
-                  "snippet": {
-                    "text": "    a == a"
-                  },
-                  "startColumn": 5,
-                  "startLine": 7
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "useless comparison"
-          },
-          "ruleId": "eqeq-bad"
-        },
-        {
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "foo.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "endColumn": 11,
-                  "endLine": 9,
-                  "snippet": {
-                    "text": "    x == x  # nosemgrep"
-                  },
-                  "startColumn": 5,
-                  "startLine": 9
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "useless comparison"
-          },
-          "ruleId": "eqeq-bad",
-          "suppressions": [
-            {
-              "kind": "inSource"
-            }
-          ]
-        },
-        {
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "foo.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "endColumn": 11,
-                  "endLine": 11,
-                  "snippet": {
-                    "text": "    y == y"
-                  },
-                  "startColumn": 5,
-                  "startLine": 11
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "useless comparison"
-          },
-          "ruleId": "eqeq-bad"
-        },
-        {
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "foo.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "endColumn": 11,
-                  "endLine": 13,
-                  "snippet": {
-                    "text": "    z == z  # nosemgrep"
-                  },
-                  "startColumn": 5,
-                  "startLine": 13
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "useless comparison"
-          },
-          "ruleId": "eqeq-bad",
-          "suppressions": [
-            {
-              "kind": "inSource"
-            }
-          ]
-        },
-        {
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "foo.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "endColumn": 13,
-                  "endLine": 18,
-                  "snippet": {
-                    "text": "    baz == 4  # nosemgrep"
-                  },
-                  "startColumn": 5,
-                  "startLine": 18
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "useless comparison to 4"
-          },
-          "ruleId": "eqeq-four",
-          "suppressions": [
-            {
-              "kind": "inSource"
-            }
-          ]
-        },
-        {
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "foo.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "endColumn": 13,
-                  "endLine": 19,
-                  "snippet": {
-                    "text": "    baz == 4"
-                  },
-                  "startColumn": 5,
-                  "startLine": 19
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "useless comparison to 4"
-          },
-          "ruleId": "eqeq-four"
-        },
-        {
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "foo.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "endColumn": 11,
-                  "endLine": 15,
-                  "snippet": {
-                    "text": "    x == 5"
-                  },
-                  "startColumn": 5,
-                  "startLine": 15
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "useless comparison to 5"
-          },
-          "ruleId": "eqeq-five"
-        },
-        {
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "foo.py",
-                  "uriBaseId": "%SRCROOT%"
-                },
-                "region": {
-                  "endColumn": 11,
-                  "endLine": 16,
-                  "snippet": {
-                    "text": "    y == 5  # nosemgrep"
-                  },
-                  "startColumn": 5,
-                  "startLine": 16
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "useless comparison to 5"
-          },
-          "ruleId": "eqeq-five",
-          "suppressions": [
-            {
-              "kind": "inSource"
             }
           ]
         }
       ],
+      "results": [],
       "tool": {
         "driver": {
           "name": "semgrep",
@@ -397,10 +106,7 @@ Scanning 1 file with 4 python rules.
 
 Some files were skipped or only partially analyzed.
   Scan was limited to files tracked by git.
+  Partially scanned: 1 files only partially analyzed due to a parsing or internal Semgrep error
 
-CI scan completed successfully.
-  Found 11 findings (9 blocking) from 3 rules.
-  Uploading findings to Semgrep App.
-  Has findings for blocking rules so exiting with code 1
 
 === end of stderr - plain

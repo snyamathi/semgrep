@@ -3,46 +3,10 @@ SEMGREP_APP_TOKEN="" SEMGREP_USER_AGENT_APPEND="pytest" SEMGREP_SETTINGS_FILE="<
 === end of command
 
 === exit code
-1
+2
 === end of exit code
 
 === stdout - plain
-
-Findings:
-
-  foo.py 
-     eqeq-bad
-        useless comparison
-
-          4┆ a == a
-          ⋮┆----------------------------------------
-          5┆ a == a
-          ⋮┆----------------------------------------
-          6┆ a == a  # nosemgrep
-          ⋮┆----------------------------------------
-          7┆ a == a
-          ⋮┆----------------------------------------
-          9┆ x == x  # nosemgrep
-          ⋮┆----------------------------------------
-         11┆ y == y
-          ⋮┆----------------------------------------
-         13┆ z == z  # nosemgrep
-          ⋮┆----------------------------------------
-     eqeq-five
-        useless comparison to 5
-
-         ▶▶┆ Autofix ▶ x == 2
-         15┆ x == 5
-          ⋮┆----------------------------------------
-         ▶▶┆ Autofix ▶ y == 2
-         16┆ y == 5  # nosemgrep
-          ⋮┆----------------------------------------
-     eqeq-four
-        useless comparison to 4
-
-         18┆ baz == 4  # nosemgrep
-          ⋮┆----------------------------------------
-         19┆ baz == 4
 
 === end of stdout - plain
 
@@ -55,12 +19,39 @@ Scan environment:
 Fetching configuration from semgrep.dev
 Fetching rules from https://semgrep.dev/registry.
 Scanning 1 file with 4 python rules.
+[ERROR] Fatal error at line foo.py:1:
+ Unix.Unix_error(Unix.ENOENT, "mkdir", "/home/pad/.semgrep/cache")
+====[ BEGIN error trace ]====
+Raised by primitive operation at Parse_with_caching.cache_file_of_file in file "src/runner/Parse_with_caching.ml", line 71, characters 36-56
+Called from Parse_with_caching.cache_computation in file "src/runner/Parse_with_caching.ml", line 44, characters 21-44
+Called from Parse_with_caching.parse_and_resolve_name in file "src/runner/Parse_with_caching.ml", line 83, characters 4-1023
+Called from CamlinternalLazy.force_lazy_block in file "camlinternalLazy.ml", line 31, characters 17-27
+Re-raised at CamlinternalLazy.force_lazy_block in file "camlinternalLazy.ml", line 36, characters 4-11
+Called from Common.with_time in file "src/pfff/commons/Common.ml", line 215, characters 12-16
+Called from Match_search_mode.matches_of_patterns in file "src/engine/Match_search_mode.ml", line 217, characters 8-67
+Called from Match_search_mode.matches_of_xpatterns in file "src/engine/Match_search_mode.ml", line 323, characters 6-55
+Called from Match_search_mode.matches_of_formula in file "src/engine/Match_search_mode.ml", line 543, characters 12-57
+Called from Match_search_mode.check_rule in file "src/engine/Match_search_mode.ml", line 573, characters 4-62
+Called from Common.set_timeout in file "src/pfff/commons/Common.ml", line 1438, characters 12-16
+Re-raised at Common.set_timeout in file "src/pfff/commons/Common.ml", line 1455, characters 6-13
+Called from Match_rules.timeout_function in file "src/engine/Match_rules.ml", line 45, characters 4-73
+Called from Match_rules.check.(fun) in file "src/engine/Match_rules.ml", line 105, characters 19-790
+Called from Common.partition_either.part_either in file "src/pfff/commons/Common.ml", line 973, characters 15-18
+Called from Match_rules.check in file "src/engine/Match_rules.ml", line 85, characters 4-1023
+Called from Run_semgrep.semgrep_with_rules.(fun) in file "src/runner/Run_semgrep.ml", line 506, characters 13-265
+Called from Run_semgrep.iter_targets_and_get_matches_and_exn_to_errors.(fun) in file "src/runner/Run_semgrep.ml", line 316, characters 21-29
+Called from Stdlib__Fun.protect in file "fun.ml", line 33, characters 8-15
+Re-raised at Stdlib__Fun.protect in file "fun.ml", line 38, characters 6-52
+Called from Memory_limit.run_with_memory_limit in file "src/system/Memory_limit.ml", line 83, characters 6-62
+Called from Run_semgrep.iter_targets_and_get_matches_and_exn_to_errors.(fun) in file "src/runner/Run_semgrep.ml", line 307, characters 17-1023
+=====[ END error trace ]=====
+
 
 Some files were skipped or only partially analyzed.
   Scan was limited to files tracked by git.
+  Partially scanned: 1 files only partially analyzed due to a parsing or internal Semgrep error
 
-CI scan completed successfully.
-  Found 11 findings (9 blocking) from 3 rules.
-  Has findings for blocking rules so exiting with code 1
+(need more rules? `semgrep login` for additional free Semgrep Registry rules)
+
 
 === end of stderr - plain
