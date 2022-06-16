@@ -73,9 +73,11 @@ and lvals_in_lval lval =
     | _else_ -> []
   in
   let offset_lvals =
-    match lval.offset with
-    | Index e -> lvals_of_exp e
-    | __else_ -> []
+    List.concat_map
+      (function
+        | Index e -> lvals_of_exp e
+        | _ -> [])
+      lval.offset
   in
   base_lvals @ offset_lvals
 

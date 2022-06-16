@@ -210,7 +210,7 @@ let exp_is_sanitized env exp =
   | [] -> None
   | sanitizer_pms -> (
       match exp.e with
-      | Fetch { base = Var var; offset = NoOffset; _ } ->
+      | Fetch { base = Var var; offset = []; _ } ->
           Some (sanitize_var env.var_env sanitizer_pms var)
       | _ -> Some env.var_env)
 
@@ -346,13 +346,11 @@ let rec check_tainted_expr env exp : Taints.t * var_env =
   in
   let check_offset env = function
     | Index e -> check env e
-    | NoOffset
-    | Dot _ ->
-        (Taints.empty, env.var_env)
+    | Dot _ -> (Taints.empty, env.var_env)
   in
   let check_subexpr exp =
     match exp.e with
-    | Fetch { base = VarSpecial (This, _); offset = Dot fld; _ } ->
+    | Fetch { base = VarSpecial (This, _); offset = Dot fld :: _; _ } ->
         (* TODO: Move this to check_tainted_instr ? *)
         let taints =
           Hashtbl.find_opt env.fun_env (str_of_name fld)
@@ -362,7 +360,9 @@ let rec check_tainted_expr env exp : Taints.t * var_env =
         (taints, env.var_env)
     | Fetch { base; offset; _ } ->
         let base_taints, var_env = check_base env base in
-        let offset_taints, var_env = check_offset { env with var_env } offset in
+        let offset_taints, var_env =
+          union_map_taints_and_vars { env with var_env } check_offset offset
+        in
         (Taints.union base_taints offset_taints, var_env)
     | FixmeExp (_, _, Some e) -> check env e
     | Literal _
