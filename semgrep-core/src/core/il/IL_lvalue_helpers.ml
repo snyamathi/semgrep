@@ -92,13 +92,43 @@ let rlvals_of_instr x =
 (* API *)
 (*****************************************************************************)
 
+let lvar_of_lval = function
+  | { base = Var name; offset } -> (
+      let id, tok = name.ident in
+      let str_of_name name = Common.spf "%s:%d" (fst name.ident) name.sid in
+      let dot_str =
+        offset
+        |> List.fold_left
+             (fun s o ->
+               match (s, o) with
+               | Some s, Dot name -> Some ("." ^ str_of_name name ^ s)
+               | _ -> None)
+             (Some "")
+      in
+      match dot_str with
+      | Some dots -> Some { name with ident = (id ^ dots, tok) }
+      | None -> Some name)
+  | _ -> None
+
 let lvar_of_instr_opt x =
+  let str_of_name name = Common.spf "%s:%d" (fst name.ident) name.sid in
   let* lval = lval_of_instr_opt x in
-  match lval.base with
-  | Var n -> Some n
-  | VarSpecial _
-  | Mem _ ->
-      None
+  match lval with
+  | { base = Var name; offset } -> (
+      let id, tok = name.ident in
+      let dot_str =
+        offset
+        |> List.fold_left
+             (fun s o ->
+               match (s, o) with
+               | Some s, Dot name -> Some ("." ^ str_of_name name ^ s)
+               | _ -> None)
+             (Some "")
+      in
+      match dot_str with
+      | Some dots -> Some { name with ident = (id ^ dots, tok) }
+      | None -> Some name)
+  | _ -> None
 
 let rlvals_of_node = function
   | Enter

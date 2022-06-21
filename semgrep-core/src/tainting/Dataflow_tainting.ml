@@ -358,12 +358,18 @@ let rec check_tainted_expr env exp : Taints.t * var_env =
           |> PM.Set.elements |> T.taints_of_pms
         in
         (taints, env.var_env)
-    | Fetch { base; offset; _ } ->
-        let base_taints, var_env = check_base env base in
+    | Fetch ({ base; offset; _ } as lval) ->
+        let var_taints, var_env =
+          match IL_lvalue_helpers.lvar_of_lval lval with
+          | Some n -> check_tainted_var env n
+          | None -> (Taints.empty, env.var_env)
+        in
+        let base_taints, var_env = check_base { env with var_env } base in
         let offset_taints, var_env =
           union_map_taints_and_vars { env with var_env } check_offset offset
         in
-        (Taints.union base_taints offset_taints, var_env)
+        ( Taints.union var_taints (Taints.union base_taints offset_taints),
+          var_env )
     | FixmeExp (_, _, Some e) -> check env e
     | Literal _
     | FixmeExp (_, _, None) ->
