@@ -12,6 +12,7 @@
 [94m[22m[24m11 | [0m    # Can't use pattern in taint
 [94m[22m[24m12 | [0m    pattern: $X == $X
 
-[31m[22m[24mOne of these properties may be invalid: 'pattern', 'pattern-sinks', 'pattern-sources'[0m
+[31m[22m[24mOne of these properties may be invalid: 'pattern', 'pattern-sinks', 'pattern-sources'
+One of these properties is missing: 'dest-language', 'extract'[0m
 [0m
 [31m[22m[24mRan with --strict and got 1 error while loading configs[0m

@@ -153,12 +153,275 @@ Running semgrep-core with command:
   ]
 }
 <MASKED>
+{
+  "rules": [
+    {
+      "id": "eqeq-bad",
+      "languages": [
+        "python"
+      ],
+      "message": "useless comparison",
+      "pattern": "$X == $X",
+      "severity": "ERROR"
+    },
+    {
+      "fix": "$X == 2",
+      "id": "eqeq-five",
+      "languages": [
+        "python"
+      ],
+      "message": "useless comparison to 5",
+      "metadata": {
+        "dev.semgrep.actions": []
+      },
+      "pattern": "$X == 5",
+      "severity": "ERROR"
+    },
+    {
+      "id": "eqeq-four",
+      "languages": [
+        "python"
+      ],
+      "message": "useless comparison to 4",
+      "metadata": {
+        "dev.semgrep.actions": [
+          "block"
+        ]
+      },
+      "pattern": "$X == 4",
+      "severity": "ERROR"
+    },
+    {
+      "id": "__r2c-internal-cai_eqeq",
+      "languages": [
+        "python"
+      ],
+      "message": "useless comparison to 3",
+      "pattern": "$X == 3",
+      "severity": "INFO"
+    }
+  ]
+}
 <MASKED>
 <MASKED>
 <MASKED>
 <MASKED>
 <MASKED>
 <MASKED>
+<MASKED>
+{ Report.matches =
+  [{ Pattern_match.rule_id =
+     { Pattern_match.id = "eqeq-five"; message = "useless comparison to 5";
+       pattern_string = "$X == 5" };
+     file = "bar.py";
+     range_loc =
+     ({ str = "bar"; charpos = 0; line = 1; column = 0; file = "bar.py" },
+      { str = "5"; charpos = 7; line = 1; column = 7; file = "bar.py" });
+     tokens = <not evaluated>;
+     env =
+     [("$X",
+       (Metavariable.Id (("bar", ()),
+          (Some { id_resolved = ref (None); id_type = ref (None);
+                  id_svalue = ref (None); id_hidden = false; id_info_id = 32
+                  })
+          )))
+       ]
+     }
+    ];
+  errors = []; skipped_targets = []; skipped_rules = [];
+  final_profiling =
+  (Some { Report.rules =
+          [{ Rule.id = ("eqeq-bad", ());
+             mode =
+             `Search ((Rule.Old
+                         (Rule.Pat
+                            { Xpattern.pat =
+                              (Xpattern.Sem (
+                                 (E
+                                    { e =
+                                      (Call (
+                                         { e = (IdSpecial ((Op Eq), ()));
+                                           e_id = 0; e_range = None },
+                                         ((),
+                                          [(Arg
+                                              { e =
+                                                (N
+                                                   (Id (("$X", ()),
+                                                      { id_resolved =
+                                                        ref (None);
+                                                        id_type = ref (None);
+                                                        id_svalue =
+                                                        ref (None);
+                                                        id_hidden = false;
+                                                        id_info_id = 27 }
+                                                      )));
+                                                e_id = 0; e_range = None });
+                                            (Arg
+                                               { e =
+                                                 (N
+                                                    (Id (("$X", ()),
+                                                       { id_resolved =
+                                                         ref (None);
+                                                         id_type = ref (None);
+                                                         id_svalue =
+                                                         ref (None);
+                                                         id_hidden = false;
+                                                         id_info_id = 28 }
+                                                       )));
+                                                 e_id = 0; e_range = None })
+                                            ],
+                                          ())
+                                         ));
+                                      e_id = 0; e_range = None }),
+                                 Python));
+                              pstr = ("$X == $X", ()); pid = 1 })));
+             message = "useless comparison"; severity = Rule.Error;
+             languages = (Xlang.L (Python, [])); options = None;
+             equivalences = None; fix = None; fix_regexp = None;
+             paths = None; metadata = None };
+            { Rule.id = ("eqeq-five", ());
+              mode =
+              `Search ((Rule.Old
+                          (Rule.Pat
+                             { Xpattern.pat =
+                               (Xpattern.Sem (
+                                  (E
+                                     { e =
+                                       (Call (
+                                          { e = (IdSpecial ((Op Eq), ()));
+                                            e_id = 0; e_range = None },
+                                          ((),
+                                           [(Arg
+                                               { e =
+                                                 (N
+                                                    (Id (("$X", ()),
+                                                       { id_resolved =
+                                                         ref (None);
+                                                         id_type = ref (None);
+                                                         id_svalue =
+                                                         ref (None);
+                                                         id_hidden = false;
+                                                         id_info_id = 29 }
+                                                       )));
+                                                 e_id = 0; e_range = None });
+                                             (Arg
+                                                { e =
+                                                  (L (Int ((Some 5), ())));
+                                                  e_id = 0; e_range = None })
+                                             ],
+                                           ())
+                                          ));
+                                       e_id = 0; e_range = None }),
+                                  Python));
+                               pstr = ("$X == 5", ()); pid = 2 })));
+              message = "useless comparison to 5"; severity = Rule.Error;
+              languages = (Xlang.L (Python, [])); options = None;
+              equivalences = None; fix = (Some "$X == 2"); fix_regexp = None;
+              paths = None;
+              metadata =
+              (Some (JSON.Object [("dev.semgrep.actions", (JSON.Array []))]))
+              };
+            { Rule.id = ("eqeq-four", ());
+              mode =
+              `Search ((Rule.Old
+                          (Rule.Pat
+                             { Xpattern.pat =
+                               (Xpattern.Sem (
+                                  (E
+                                     { e =
+                                       (Call (
+                                          { e = (IdSpecial ((Op Eq), ()));
+                                            e_id = 0; e_range = None },
+                                          ((),
+                                           [(Arg
+                                               { e =
+                                                 (N
+                                                    (Id (("$X", ()),
+                                                       { id_resolved =
+                                                         ref (None);
+                                                         id_type = ref (None);
+                                                         id_svalue =
+                                                         ref (None);
+                                                         id_hidden = false;
+                                                         id_info_id = 30 }
+                                                       )));
+                                                 e_id = 0; e_range = None });
+                                             (Arg
+                                                { e =
+                                                  (L (Int ((Some 4), ())));
+                                                  e_id = 0; e_range = None })
+                                             ],
+                                           ())
+                                          ));
+                                       e_id = 0; e_range = None }),
+                                  Python));
+                               pstr = ("$X == 4", ()); pid = 3 })));
+              message = "useless comparison to 4"; severity = Rule.Error;
+              languages = (Xlang.L (Python, [])); options = None;
+              equivalences = None; fix = None; fix_regexp = None;
+              paths = None;
+              metadata =
+              (Some (JSON.Object
+                       [("dev.semgrep.actions",
+                         (JSON.Array [(JSON.String "block")]))]))
+              };
+            { Rule.id = ("__r2c-internal-cai_eqeq", ());
+              mode =
+              `Search ((Rule.Old
+                          (Rule.Pat
+                             { Xpattern.pat =
+                               (Xpattern.Sem (
+                                  (E
+                                     { e =
+                                       (Call (
+                                          { e = (IdSpecial ((Op Eq), ()));
+                                            e_id = 0; e_range = None },
+                                          ((),
+                                           [(Arg
+                                               { e =
+                                                 (N
+                                                    (Id (("$X", ()),
+                                                       { id_resolved =
+                                                         ref (None);
+                                                         id_type = ref (None);
+                                                         id_svalue =
+                                                         ref (None);
+                                                         id_hidden = false;
+                                                         id_info_id = 31 }
+                                                       )));
+                                                 e_id = 0; e_range = None });
+                                             (Arg
+                                                { e =
+                                                  (L (Int ((Some 3), ())));
+                                                  e_id = 0; e_range = None })
+                                             ],
+                                           ())
+                                          ));
+                                       e_id = 0; e_range = None }),
+                                  Python));
+                               pstr = ("$X == 3", ()); pid = 4 })));
+              message = "useless comparison to 3"; severity = Rule.Info;
+              languages = (Xlang.L (Python, [])); options = None;
+              equivalences = None; fix = None; fix_regexp = None;
+              paths = None; metadata = None }
+            ];
+          rules_parse_time = 0.00185513496399;
+          file_times =
+          [{ Report.file = "bar.py";
+             rule_times =
+             [{ Report.rule_id = "eqeq-bad"; parse_time = 0.000282049179077;
+                match_time = 0.000103950500488 };
+               { Report.rule_id = "eqeq-five"; parse_time = 0.;
+                 match_time = 5.57899475098e-05 };
+               { Report.rule_id = "eqeq-four"; parse_time = 0.;
+                 match_time = 5.41210174561e-05 };
+               { Report.rule_id = "__r2c-internal-cai_eqeq"; parse_time = 0.;
+                 match_time = 5.29289245605e-05 }
+               ];
+             run_time = 0.000833034515381 }
+            ]
+          })
+  }
 <MASKED>
 <MASKED>
 --- end semgrep-core stderr ---
