@@ -14,6 +14,6 @@
 [94m[22m[24m14 | [0m      set samesite=None.
 
 [31m[22m[24mOne of these properties may be invalid: 'patterns'
-One of these properties is missing: 'mode', 'severity'[0m
+One of these properties is missing: 'dest-language', 'extract', 'mode', 'severity'[0m
 [0m
 [31m[22m[24mRan with --strict and got 1 error while loading configs[0m
