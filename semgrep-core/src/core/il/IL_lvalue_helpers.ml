@@ -92,22 +92,28 @@ let rlvals_of_instr x =
 (* API *)
 (*****************************************************************************)
 
-let lvar_of_lval = function
+let dotted_lvars_of_lval = function
   | { base = Var name; offset } -> (
       let id, tok = name.ident in
       let str_of_name name = Common.spf "%s:%d" (fst name.ident) name.sid in
       let dot_str =
-        offset
-        |> List.fold_left
-             (fun s o ->
-               match (s, o) with
-               | Some s, Dot name -> Some ("." ^ str_of_name name ^ s)
-               | _ -> None)
-             (Some "")
+        List.fold_right
+          (fun o s ->
+            match (s, o) with
+            | Some (s, ss), Dot name ->
+                let x = s ^ "." ^ str_of_name name in
+                Some (x, x :: ss)
+            | _ -> None)
+          offset
+          (Some ("", []))
       in
       match dot_str with
-      | Some dots -> Some { name with ident = (id ^ dots, tok) }
-      | None -> Some name)
+      | None
+      | Some ("", []) ->
+          None
+      | Some (dots, dotss) ->
+          let add_dots dots = { name with ident = (id ^ dots, tok) } in
+          Some (add_dots dots, Common.map add_dots dotss))
   | _ -> None
 
 let lvar_of_instr_opt x =

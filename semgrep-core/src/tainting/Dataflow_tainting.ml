@@ -58,6 +58,13 @@ type overlap = float
 type propagator_id = var
 type propagator_from = propagator_id
 type propagator_to = propagator_id
+type taint_info = Tainted of Taints.t | MarkedClean
+
+let equal_taint_info a b =
+  match (a, b) with
+  | Tainted taints1, Tainted taints2 -> Taints.equal taints1 taints2
+  | MarkedClean, MarkedClean -> true
+  | _ -> false
 
 type config = {
   filepath : Common.filename;
@@ -68,14 +75,14 @@ type config = {
   is_sanitizer : G.any -> (PM.t * overlap) list;
   unify_mvars : bool;
   handle_findings :
-    var option -> T.finding list -> Taints.t Dataflow_core.env -> unit;
+    var option -> T.finding list -> taint_info Dataflow_core.env -> unit;
 }
 
-type mapping = Taints.t Dataflow_core.mapping
+type mapping = taint_info Dataflow_core.mapping
 
 (* HACK: Tracks tainted functions intrafile. *)
 type fun_env = (var, PM.Set.t) Hashtbl.t
-type var_env = Taints.t VarMap.t
+type var_env = taint_info VarMap.t
 
 type env = {
   config : config;
@@ -94,7 +101,15 @@ let hook_function_taint_signature = ref None
 (* Helpers *)
 (*****************************************************************************)
 
-let union_vars = Dataflow_core.varmap_union Taints.union
+let union_taint_info a b =
+  match (a, b) with
+  | MarkedClean, MarkedClean -> MarkedClean
+  | Tainted taints1, Tainted taints2 -> Tainted (Taints.union taints1 taints2)
+  | MarkedClean, Tainted taint
+  | Tainted taint, MarkedClean ->
+      Tainted taint
+
+let union_vars = Dataflow_core.varmap_union union_taint_info
 
 let union_map_taints_and_vars env f xs =
   xs
@@ -219,9 +234,11 @@ let add_taint_to_strid_in_env var_env strid taints =
   else
     VarMap.update strid
       (function
-        | None -> Some taints
+        | None
+        | Some MarkedClean ->
+            Some (Tainted taints)
         (* THINK: couldn't we just replace the existing taints? *)
-        | Some taints' -> Some (Taints.union taints taints'))
+        | Some (Tainted taints') -> Some (Tainted (Taints.union taints taints')))
       var_env
 
 (* Add `var -> taints` to `var_env`. *)
@@ -262,7 +279,11 @@ let handle_taint_propagators env x taints =
     List.fold_left
       (fun taints_in_acc strid ->
         let taints_strid =
-          VarMap.find_opt strid var_env |> Option.value ~default:Taints.empty
+          VarMap.find_opt strid var_env |> function
+          | None
+          | Some MarkedClean ->
+              Taints.empty
+          | Some (Tainted taints) -> taints
         in
         Taints.union taints_in_acc taints_strid)
       Taints.empty propagate_tos
@@ -308,8 +329,11 @@ let check_tainted_var env (var : IL.name) : Taints.t * var_env =
       and taints_sources_mut =
         mut_source_pms |> Common.map fst |> T.taints_of_pms
       and taints_var_env =
-        VarMap.find_opt (str_of_name var) env.var_env
-        |> Option.value ~default:Taints.empty
+        VarMap.find_opt (str_of_name var) env.var_env |> function
+        | None
+        | Some MarkedClean ->
+            Taints.empty
+        | Some (Tainted taints) -> taints
       and taints_fun_env =
         (* TODO: Move this to check_tainted_instr ? *)
         Hashtbl.find_opt env.fun_env (str_of_name var)
@@ -358,18 +382,41 @@ let rec check_tainted_expr env exp : Taints.t * var_env =
           |> PM.Set.elements |> T.taints_of_pms
         in
         (taints, env.var_env)
-    | Fetch ({ base; offset; _ } as lval) ->
-        let var_taints, var_env =
-          match IL_lvalue_helpers.lvar_of_lval lval with
-          | Some n -> check_tainted_var env n
-          | None -> (Taints.empty, env.var_env)
+    | Fetch ({ base; offset; _ } as lval) -> (
+        let dotted_lvars = IL_lvalue_helpers.dotted_lvars_of_lval lval in
+        let x =
+          match dotted_lvars with
+          | Some (_n, ns) ->
+              (* Printf.printf "dotted_lvars for %s\n" (str_of_name n);
+                 List.iter (fun x -> print_endline (str_of_name x)) ns;
+                 print_endline "DONE\n"; *)
+              let rec go = function
+                | [] -> None
+                | Some t :: _ -> Some t
+                | None :: ts -> go ts
+              in
+              ns
+              |> Common.map (fun x ->
+                     VarMap.find_opt (str_of_name x) env.var_env)
+              |> go
+          | None -> None
         in
-        let base_taints, var_env = check_base { env with var_env } base in
-        let offset_taints, var_env =
-          union_map_taints_and_vars { env with var_env } check_offset offset
-        in
-        ( Taints.union var_taints (Taints.union base_taints offset_taints),
-          var_env )
+        match x with
+        | Some MarkedClean -> (Taints.empty, env.var_env)
+        | Some (Tainted _)
+        | None ->
+            let var_taints, var_env =
+              match x with
+              | Some (Tainted t) -> (t, env.var_env)
+              | None -> (Taints.empty, env.var_env)
+              | Some _ -> failwith "impossible"
+            in
+            let base_taints, var_env = check_base { env with var_env } base in
+            let offset_taints, var_env =
+              union_map_taints_and_vars { env with var_env } check_offset offset
+            in
+            ( Taints.union var_taints (Taints.union base_taints offset_taints),
+              var_env ))
     | FixmeExp (_, _, Some e) -> check env e
     | Literal _
     | FixmeExp (_, _, None) ->
@@ -555,17 +602,17 @@ let input_env ~enter_env ~(flow : F.cfg) mapping ni =
 let (transfer :
       config ->
       fun_env ->
-      Taints.t Dataflow_core.env ->
+      taint_info Dataflow_core.env ->
       string option ->
       flow:F.cfg ->
-      Taints.t Dataflow_core.transfn) =
+      taint_info Dataflow_core.transfn) =
  fun config fun_env enter_env opt_name ~flow
      (* the transfer function to update the mapping at node index ni *)
        mapping ni ->
   (* DataflowX.display_mapping flow mapping show_tainted; *)
-  let in' : Taints.t VarMap.t = input_env ~enter_env ~flow mapping ni in
+  let in' : taint_info VarMap.t = input_env ~enter_env ~flow mapping ni in
   let node = flow.graph#nodes#assoc ni in
-  let out' : Taints.t VarMap.t =
+  let out' : taint_info VarMap.t =
     let env = { config; fun_name = opt_name; fun_env; var_env = in' } in
     match node.F.n with
     | NInstr x -> (
@@ -574,13 +621,14 @@ let (transfer :
           match LV.lvar_of_instr_opt x with
           | None -> var_env'
           | Some var ->
+              (* Printf.printf "Tainting %s\n" (str_of_name var); *)
               (* We call `check_tainted_var` here because the assigned `var`
                * itself could be annotated as a source of taint. *)
               check_tainted_var { env with var_env = var_env' } var |> snd
         in
         match (Taints.is_empty taints, LV.lvar_of_instr_opt x) with
         (* Instruction returns safe data, remove taint from `var`. *)
-        | true, Some var -> VarMap.remove (str_of_name var) var_env'
+        | true, Some var -> VarMap.add (str_of_name var) MarkedClean var_env'
         (* Instruction returns tainted data, add taints to `var`. *)
         | false, Some var -> add_taint_to_var_in_env var_env' var taints
         (* There is no variable being assigned, presumably the Instruction
@@ -619,7 +667,7 @@ let (transfer :
 (*****************************************************************************)
 
 let (fixpoint :
-      ?in_env:Taints.t Dataflow_core.VarMap.t ->
+      ?in_env:taint_info Dataflow_core.VarMap.t ->
       ?name:Dataflow_core.var ->
       ?fun_env:fun_env ->
       config ->
@@ -636,7 +684,7 @@ let (fixpoint :
   in
   (* THINK: Why I cannot just update mapping here ? if I do, the mapping gets overwritten later on! *)
   (* DataflowX.display_mapping flow init_mapping show_tainted; *)
-  DataflowX.fixpoint ~eq:Taints.equal ~init:init_mapping
+  DataflowX.fixpoint ~eq:equal_taint_info ~init:init_mapping
     ~trans:(transfer config fun_env enter_env opt_name ~flow)
       (* tainting is a forward analysis! *)
     ~forward:true ~flow

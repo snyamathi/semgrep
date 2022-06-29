@@ -31,18 +31,20 @@ let test_tainting lang file config def =
   Common.pr2 "\nDataflow";
   Common.pr2 "--------";
   let mapping = Dataflow_tainting.fixpoint config flow in
-  DataflowX.display_mapping flow mapping (fun taint ->
-      let show_taint t =
-        match t.Taint.orig with
-        | Taint.Src src ->
-            let tok1, tok2 = (Taint.pm_of_trace src).range_loc in
-            let r = Range.range_of_token_locations tok1 tok2 in
-            Range.content_at_range file r
-        | Taint.Arg i -> spf "arg %d" i
-      in
-      taint |> Taint.Taint_set.elements |> Common.map show_taint
-      |> String.concat ", "
-      |> fun str -> "{ " ^ str ^ " }")
+  DataflowX.display_mapping flow mapping (function
+    | MarkedClean -> "Clean"
+    | Tainted taint ->
+        let show_taint t =
+          match t.Taint.orig with
+          | Taint.Src src ->
+              let tok1, tok2 = (Taint.pm_of_trace src).range_loc in
+              let r = Range.range_of_token_locations tok1 tok2 in
+              Range.content_at_range file r
+          | Taint.Arg i -> spf "arg %d" i
+        in
+        taint |> Taint.Taint_set.elements |> Common.map show_taint
+        |> String.concat ", "
+        |> fun str -> "{ " ^ str ^ " }")
 
 let test_dfg_tainting rules_file file =
   let lang = List.hd (Lang.langs_of_filename file) in
