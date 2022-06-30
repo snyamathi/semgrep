@@ -3,35 +3,10 @@ CI="true" GITHUB_ACTIONS="true" GITHUB_EVENT_NAME="pull_request" GITHUB_REPOSITO
 === end of command
 
 === exit code
-1
+2
 === end of exit code
 
 === stdout - plain
-
-Findings:
-
-  foo.py 
-     eqeq-bad
-        useless comparison
-
-          4┆ a == a
-          ⋮┆----------------------------------------
-          5┆ a == a
-          ⋮┆----------------------------------------
-          7┆ a == a
-          ⋮┆----------------------------------------
-         11┆ y == y
-          ⋮┆----------------------------------------
-     eqeq-five
-        useless comparison to 5
-
-         ▶▶┆ Autofix ▶ x == 2
-         15┆ x == 2
-          ⋮┆----------------------------------------
-     eqeq-four
-        useless comparison to 4
-
-         19┆ baz == 4
 
 === end of stdout - plain
 
@@ -43,26 +18,23 @@ Scan environment:
 
 Fixing git state for github action pull request
 Not on head ref: <MASKED>; checking that out now.
-Using <MASKED> as the merge-base of <MASKED> and <MASKED>
-Fetching configuration from semgrep.dev
-Adding ignore patterns configured on semgrep.dev as `--exclude` options: ()
-Fetching rules from https://semgrep.dev/registry.
-Scanning 1 file with 4 python rules.
-  Current version has 12 findings.
-
-Switching repository to baseline commit '<MASKED>'.
-  Will report findings introduced by these commits:
-    * <MASKED> Some other commit/ message
-
-Scanning 1 file with 4 python rules.
 Returning to original head revision <MASKED>
-
-Some files were skipped or only partially analyzed.
-  Scan was limited to files changed since baseline commit.
-
-CI scan completed successfully.
-  Found 6 findings (5 blocking) from 3 rules.
-  Uploading findings to Semgrep App.
-  Has findings for blocking rules so exiting with code 1
+name 'get_state' is not defined
+Traceback (most recent call last):
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/commands/wrapper.py", line 35, in wrapper
+    func(*args, **kwargs)
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/commands/ci.py", line 284, in ci
+    metadata_dict = metadata.to_dict()
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/meta.py", line 405, in to_dict
+    **super().to_dict(),
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/meta.py", line 134, in to_dict
+    "is_full_scan": self.merge_base_ref is None,
+  File "/home/runner/.local/share/virtualenvs/cli-uZ-2zvZl/lib/python3.8/site-packages/boltons/cacheutils.py", line 641, in __get__
+    value = obj.__dict__[self.func.__name__] = self.func(obj)
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/meta.py", line 354, in merge_base_ref
+    return self._find_branchoff_point()
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/meta.py", line 276, in _find_branchoff_point
+    fetch_depth += get_state().env.min_fetch_depth
+NameError: name 'get_state' is not defined
 
 === end of stderr - plain
