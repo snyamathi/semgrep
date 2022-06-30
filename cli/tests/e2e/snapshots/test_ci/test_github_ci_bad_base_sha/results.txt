@@ -32,8 +32,8 @@ Fixing git state for github action pull request
 Calling git rev-parse HEAD
 stashed_rev: 17b3114fb3d41437abc2a3e6499db84ad921e6f0
 Not on head ref: 17b3114fb3d41437abc2a3e6499db84ad921e6f0; checking that out now.
-Attempting to find merge base, attempt_count=0, fetch_depth=0
-Attempting to find merge base, attempt_count=1, fetch_depth=4
+Attempting to find merge base, attempt_count=0, fetch_depth=200
+Attempting to find merge base, attempt_count=1, fetch_depth=204
 Trying to fetch branch foo from origin as base branch
 Trying to fetch branch bar as commit from origin as head branch tip commit
 Using f7ee3123ed098941662685dd8b726fceee48f78d as the merge-base of f7ee3123ed098941662685dd8b726fceee48f78d and 17b3114fb3d41437abc2a3e6499db84ad921e6f0
