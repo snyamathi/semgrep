@@ -1,31 +1,39 @@
 {
   "errors": [
     {
-      "code": 4,
+      "code": 2,
       "level": "error",
-      "long_msg": "One of these properties may be invalid: 'patterns'\nOne of these properties is missing: 'mode', 'severity'",
-      "short_msg": "Invalid rule schema",
+      "message": "[ERROR] Pattern parse error in rule rules.syntax.flask-secure-set-cookie:\n Invalid pattern for Python:\n--- pattern ---\nflask.response.set_cookie(....)\n\n--- end pattern ---\nPattern error: Parsing.Parse_error\n",
+      "rule_id": "rules.syntax.flask-secure-set-cookie",
       "spans": [
         {
-          "end": {
-            "col": 1,
-            "line": 15
+          "config_end": {
+            "col": 36,
+            "line": 0
           },
-          "file": "rules/syntax/missing-field.yaml",
-          "source_hash": "11211df936d8dd4787be2c2be20d33fd13c465c766569eb9fc10e3e812829a02",
+          "config_path": [
+            "rules",
+            "0",
+            "patterns",
+            "1",
+            "pattern"
+          ],
+          "config_start": {
+            "col": 1,
+            "line": 0
+          },
+          "end": {
+            "col": 57,
+            "line": 14
+          },
+          "file": "tmp/masked/path",
           "start": {
-            "col": 5,
-            "line": 3
+            "col": 22,
+            "line": 14
           }
         }
       ],
-      "type": "InvalidRuleSchemaError"
-    },
-    {
-      "code": 7,
-      "level": "error",
-      "message": "Ran with --strict and got 1 error while loading configs",
-      "type": "SemgrepError"
+      "type": "Pattern parse error"
     }
   ],
   "paths": {

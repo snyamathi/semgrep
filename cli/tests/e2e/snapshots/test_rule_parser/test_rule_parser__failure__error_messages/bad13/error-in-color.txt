@@ -8,6 +8,6 @@
 [94m[22m[24m7 | [0m    # Can't use taint
 [94m[22m[24m8 | [0m    pattern: $X == $X
 
-[31m[22m[24mOne of these properties may be invalid: 'pattern'[0m
+[31m[22m[24mOne of these properties is missing: 'pattern-sinks'[0m
 [0m
 [31m[22m[24mRan with --strict and got 1 error while loading configs[0m
