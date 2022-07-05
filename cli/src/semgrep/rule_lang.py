@@ -456,7 +456,7 @@ def _validation_error_message(error: jsonschema.exceptions.ValidationError) -> s
     tests/e2e/rules/syntax/badXXX.yaml
     """
 
-    contexts = list(error.parent.context) if error.parent else [error]
+    contexts = (error.parent.context or []) if error.parent else [error]
     bad_type = set()
     invalid_keys = set()
     any_of_invalid_keys = set()
@@ -501,7 +501,7 @@ def _validation_error_message(error: jsonschema.exceptions.ValidationError) -> s
     if outs:
         return "\n".join(outs)
 
-    return cast(str, contexts[0].message)
+    return contexts[0].message
 
 
 def validate_yaml(data: YamlTree) -> None:
@@ -515,7 +515,7 @@ def validate_yaml(data: YamlTree) -> None:
 
         root_error = ve
         while root_error.parent is not None:
-            root_error = root_error.parent
+            root_error = cast(jsonschema.ValidationError, root_error.parent)
 
         for el in root_error.absolute_path:
             item = item.value[el]
