@@ -387,12 +387,12 @@ let rec check_tainted_expr env exp : Taints.t * var_env =
         (taints, env.var_env)
     | Fetch ({ base; offset; _ } as lval) -> (
         let dotted_lvars = IL_lvalue_helpers.dotted_lvars_of_lval lval in
+        print_endline "START";
+        List.iter (fun x -> print_endline (str_of_name x)) dotted_lvars;
+        print_endline "END\n";
         let x =
           match dotted_lvars with
-          | Some (_n, ns) ->
-              (* Printf.printf "dotted_lvars for %s\n" (str_of_name n);
-                 List.iter (fun x -> print_endline (str_of_name x)) ns;
-                 print_endline "DONE\n"; *)
+          | _ :: _ as ns ->
               let rec go = function
                 | [] -> None
                 | Some t :: _ -> Some t
@@ -402,7 +402,7 @@ let rec check_tainted_expr env exp : Taints.t * var_env =
               |> Common.map (fun x ->
                      VarMap.find_opt (str_of_name x) env.var_env)
               |> go
-          | None -> None
+          | [] -> None
         in
         match x with
         | Some MarkedClean -> (Taints.empty, env.var_env)
@@ -628,7 +628,7 @@ let (transfer :
         let var_env' =
           match LV.lvar_of_instr_opt x with
           | None -> var_env'
-          | Some var ->
+          | Some (var, _) ->
               (* Printf.printf "Tainting %s\n" (str_of_name var); *)
               (* We call `check_tainted_var` here because the assigned `var`
                * itself could be annotated as a source of taint. *)
@@ -636,9 +636,15 @@ let (transfer :
         in
         match (Taints.is_empty taints, LV.lvar_of_instr_opt x) with
         (* Instruction returns safe data, remove taint from `var`. *)
-        | true, Some var -> VarMap.add (str_of_name var) MarkedClean var_env'
+        | true, Some (var, _) ->
+            print_endline ("UNTAINTING: " ^ str_of_name var);
+            VarMap.add (str_of_name var) MarkedClean var_env'
         (* Instruction returns tainted data, add taints to `var`. *)
-        | false, Some var -> add_taint_to_var_in_env var_env' var taints
+        | false, Some (var, dots) ->
+            print_endline ("TAINTING + prefix: " ^ str_of_name var);
+            List.fold_left
+              (fun var_env var -> add_taint_to_var_in_env var_env var taints)
+              var_env' (var :: dots)
         (* There is no variable being assigned, presumably the Instruction
          * returns 'void'. *)
         | _, None -> var_env')

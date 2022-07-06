@@ -96,44 +96,37 @@ let dotted_lvars_of_lval = function
   | { base = Var name; offset } -> (
       let id, tok = name.ident in
       let str_of_name name = Common.spf "%s:%d" (fst name.ident) name.sid in
-      let dot_str =
+      let dot_strs =
         List.fold_right
           (fun o s ->
             match (s, o) with
-            | Some (s, ss), Dot name ->
+            | Some (s :: ss), Dot name ->
                 let x = s ^ "." ^ str_of_name name in
-                Some (x, x :: ss)
+                Some (x :: s :: ss)
+            | Some [], Dot name -> Some [ "." ^ str_of_name name ]
             | _ -> None)
-          offset
-          (Some ("", []))
+          offset (Some [])
       in
-      match dot_str with
+      match dot_strs with
       | None
-      | Some ("", []) ->
-          None
-      | Some (dots, dotss) ->
+      | Some [] ->
+          []
+      | Some dot_strs ->
           let add_dots dots = { name with ident = (id ^ dots, tok) } in
-          Some (add_dots dots, Common.map add_dots dotss))
-  | _ -> None
+          Common.map add_dots dot_strs)
+  | _ -> []
 
 let lvar_of_instr_opt x =
-  let str_of_name name = Common.spf "%s:%d" (fst name.ident) name.sid in
   let* lval = lval_of_instr_opt x in
   match lval with
-  | { base = Var name; offset } -> (
-      let id, tok = name.ident in
-      let dot_str =
-        offset
-        |> List.fold_left
-             (fun s o ->
-               match (s, o) with
-               | Some s, Dot name -> Some ("." ^ str_of_name name ^ s)
-               | _ -> None)
-             (Some "")
-      in
-      match dot_str with
-      | Some dots -> Some { name with ident = (id ^ dots, tok) }
-      | None -> Some name)
+  | { base = Var name; _ } -> (
+      let str_of_name name = Common.spf "%s:%d" (fst name.ident) name.sid in
+      let dots = dotted_lvars_of_lval lval in
+      match dots with
+      | dotted_name :: _ ->
+          print_endline @@ "FOUND DOTTED LVAR: " ^ str_of_name dotted_name;
+          Some (dotted_name, dots)
+      | [] -> Some (name, []))
   | _ -> None
 
 let rlvals_of_node = function
