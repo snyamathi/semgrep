@@ -106,8 +106,6 @@ class ConfigPath:
             self._config_path = saved_snippet_to_url(config_str)
         elif config_str == AUTO_CONFIG_KEY:
             state.metrics.add_feature("config", "auto")
-            if self._project_url is not None:
-                self._extra_headers["X-Semgrep-Project"] = self._project_url
             self._config_path = f"{state.env.semgrep_url}/{AUTO_CONFIG_LOCATION}"
         else:
             state.metrics.add_feature("config", "local")
@@ -161,7 +159,7 @@ class ConfigPath:
             notice = f"\nRules downloaded from {config_url} failed to parse.\nThis is likely because rules have been added that use functionality introduced in later versions of semgrep.\nPlease upgrade to latest version of semgrep (see https://semgrep.dev/docs/upgrading/) and try again.\n"
             notice_color = with_color(Colors.red, notice, bold=True)
             logger.error(notice_color)
-            raise SemgrepError(terminal_wrap(f"Parse error details: {str(e)}"))
+            raise e
         except Exception as e:
             raise SemgrepError(
                 terminal_wrap(f"Failed to download config from {config_url}: {str(e)}")
@@ -305,7 +303,10 @@ class Config:
     @staticmethod
     def _convert_config_id_to_prefix(config_id: str) -> str:
         at_path = Path(config_id)
-        at_path = Config._safe_relative_to(at_path, Path.cwd())
+        try:
+            at_path = Config._safe_relative_to(at_path, Path.cwd())
+        except FileNotFoundError:
+            pass
 
         prefix = ".".join(at_path.parts[:-1]).lstrip("./").lstrip(".")
         if len(prefix):
@@ -446,6 +447,7 @@ def parse_config_string(
     try:
         # we pretend it came from YAML so we can keep later code simple
         data = YamlTree.wrap(json.loads(contents), EmptySpan)
+        return {config_id: data}
     except json.decoder.JSONDecodeError:
         pass
 

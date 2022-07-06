@@ -11,14 +11,12 @@ export default function TestComponent4({assets, children, title}) {
         <body>
           <noscript
             dangerouslySetInnerHTML={{
-              //OK:
               __html: `<b>Enable JavaScript to run this app.</b>`,
             }}
           />
           {children}
           <script
             dangerouslySetInnerHTML={{
-             //OK:
               __html: `assetManifest = ${JSON.stringify(assets)};`,
             }}
           />

@@ -52,7 +52,13 @@ logger = getLogger(__name__)
 
 def get_file_ignore() -> FileIgnore:
     TEMPLATES_DIR = Path(__file__).parent / "templates"
-    workdir = Path.cwd()
+    try:
+        workdir = Path.cwd()
+    except FileNotFoundError:
+        workdir = Path.home()
+        logger.warn(
+            f"Current working directory does not exist! Instead checking {workdir} for .semgrepignore files"
+        )
 
     # Meant to be used only by semgrep-action
     if "SEMGREP_R2C_INTERNAL_EXPLICIT_SEMGREPIGNORE" in environ:
@@ -167,7 +173,7 @@ def run_rules(
 
     if len(dependency_aware_rules) > 0:
         from semgrep.dependency_aware_rule import run_dependency_aware_rule
-        from dependencyparser.find_lockfiles import make_dependency_trie
+        from semdep.find_lockfiles import make_dependency_trie
 
         targets = [t.path for t in target_manager.targets]
         top_level_target_rooted = list(targets[0].parents)

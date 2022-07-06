@@ -1,3 +1,17 @@
+(* Yoann Padioleau
+ *
+ * Copyright (C) 2020-2022 r2c
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * version 2.1 as published by the Free Software Foundation, with the
+ * special exception on linking described in file license.txt.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the file
+ * license.txt for more details.
+ *)
 open Common
 open Runner_config
 module PI = Parse_info
@@ -60,10 +74,46 @@ let replace_named_pipe_by_regular_file path =
 (* for -gen_layer, see Experiments.ml *)
 let _matching_tokens = ref []
 
-let print_match ?str match_format mvars mvar_binding ii_of_any
-    tokens_matched_code =
+let string_of_toks toks =
+  String.concat ", " (Common.map (fun tok -> PI.str_of_info tok) toks)
+
+let rec print_taint_call_trace ~format ~spaces = function
+  | Pattern_match.Toks toks -> Matching_report.print_match ~format ~spaces toks
+  | Call { call_toks; intermediate_vars; call_trace } ->
+      let spaces_string = String.init spaces (fun _ -> ' ') in
+      pr (spaces_string ^ "call to");
+      Matching_report.print_match ~format ~spaces call_toks;
+      if intermediate_vars <> [] then
+        pr
+          (spf "%sthese intermediate values are tainted: %s" spaces_string
+             (string_of_toks intermediate_vars));
+      pr (spaces_string ^ "then");
+      print_taint_call_trace ~format ~spaces:(spaces + 2) call_trace
+
+let print_taint_trace ~format taint_trace =
+  if format <> Matching_report.Normal then ()
+  else
+    let (lazy { Pattern_match.source; tokens; sink }) = taint_trace in
+    pr "  * Taint comes from:";
+    print_taint_call_trace ~format ~spaces:4 source;
+    if tokens <> [] then
+      pr
+        (spf "  * These intermediate values are tainted: %s"
+           (string_of_toks tokens));
+    match sink with
+    | Pattern_match.Toks _ -> ()
+    | Call _ ->
+        pr "  * This is how taint reaches the sink:";
+        print_taint_call_trace ~format ~spaces:4 sink
+
+let print_match ?str config match_ ii_of_any =
   (* there are a few fake tokens in the generic ASTs now (e.g.,
    * for DotAccess generated outside the grammar) *)
+  let { match_format; mvars; _ } = config in
+  let { Pattern_match.env; tokens = (lazy tokens_matched_code); taint_trace; _ }
+      =
+    match_
+  in
   let toks = tokens_matched_code |> List.filter PI.is_origintok in
   (if mvars = [] then Matching_report.print_match ?str ~format:match_format toks
   else
@@ -76,7 +126,7 @@ let print_match ?str match_format mvars mvar_binding ii_of_any
     let strings_metavars =
       mvars
       |> Common.map (fun x ->
-             match Common2.assoc_opt x mvar_binding with
+             match Common2.assoc_opt x env with
              | Some any ->
                  any |> ii_of_any
                  |> List.filter PI.is_origintok
@@ -86,6 +136,7 @@ let print_match ?str match_format mvars mvar_binding ii_of_any
     in
     pr (spf "%s:%d: %s" file line (Common.join ":" strings_metavars));
     ());
+  Option.iter (print_taint_trace ~format:match_format) taint_trace;
   toks |> List.iter (fun x -> Common.push x _matching_tokens)
 
 let timeout_function file timeout f =
@@ -497,11 +548,9 @@ let semgrep_with_rules config ((rules, invalid_rules), rules_parse_time) =
            in
 
            let xtarget = xtarget_of_file config xlang file in
-           let match_hook str env matched_tokens _opt_taint_finding =
+           let match_hook str match_ =
              if config.output_format = Text then
-               let xs = Lazy.force matched_tokens in
-               print_match ~str config.match_format config.mvars env
-                 Metavariable.ii_of_mval xs
+               print_match ~str config match_ Metavariable.ii_of_mval
            in
            let res =
              Match_rules.check ~match_hook ~timeout:config.timeout
@@ -562,7 +611,7 @@ let semgrep_with_raw_results_and_exn_handler config =
       let res =
         { RP.empty_final_result with errors = [ E.exn_to_error "" e ] }
       in
-      (Some exn, res, [])
+      (Some e, res, [])
 
 let semgrep_with_rules_and_formatted_output config =
   let exn, res, files = semgrep_with_raw_results_and_exn_handler config in
@@ -588,8 +637,9 @@ let semgrep_with_rules_and_formatted_output config =
       | None -> ())
   | Text ->
       (* the match has already been printed above. We just print errors here *)
-      (* pr (spf "number of errors: %d" (List.length errs)); *)
-      res.errors |> List.iter (fun err -> pr (E.string_of_error err))
+      if not (null res.errors) then (
+        pr "WARNING: some files were skipped on only partially analyzed:";
+        res.errors |> List.iter (fun err -> pr (E.string_of_error err)))
 
 (*****************************************************************************)
 (* Semgrep -e/-f *)
@@ -688,10 +738,8 @@ let semgrep_with_one_pattern config =
                        file
                    in
                    Match_patterns.check
-                     ~hook:(fun env matched_tokens ->
-                       let xs = Lazy.force matched_tokens in
-                       print_match config.match_format config.mvars env
-                         Metavariable.ii_of_mval xs)
+                     ~hook:(fun match_ ->
+                       print_match config match_ Metavariable.ii_of_mval)
                      ( Config_semgrep.default_config,
                        parse_equivalences config.equivalences_file )
                      minirule (file, lang, ast)
