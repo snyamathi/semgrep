@@ -387,9 +387,6 @@ let rec check_tainted_expr env exp : Taints.t * var_env =
         (taints, env.var_env)
     | Fetch ({ base; offset; _ } as lval) -> (
         let dotted_lvars = IL_lvalue_helpers.dotted_lvars_of_lval lval in
-        print_endline "START";
-        List.iter (fun x -> print_endline (str_of_name x)) dotted_lvars;
-        print_endline "END\n";
         let x =
           match dotted_lvars with
           | _ :: _ as ns ->
@@ -629,7 +626,6 @@ let (transfer :
           match LV.lvar_of_instr_opt x with
           | None -> var_env'
           | Some (var, _) ->
-              (* Printf.printf "Tainting %s\n" (str_of_name var); *)
               (* We call `check_tainted_var` here because the assigned `var`
                * itself could be annotated as a source of taint. *)
               check_tainted_var { env with var_env = var_env' } var |> snd
@@ -637,11 +633,9 @@ let (transfer :
         match (Taints.is_empty taints, LV.lvar_of_instr_opt x) with
         (* Instruction returns safe data, remove taint from `var`. *)
         | true, Some (var, _) ->
-            print_endline ("UNTAINTING: " ^ str_of_name var);
             VarMap.add (str_of_name var) MarkedClean var_env'
         (* Instruction returns tainted data, add taints to `var`. *)
         | false, Some (var, dots) ->
-            print_endline ("TAINTING + prefix: " ^ str_of_name var);
             List.fold_left
               (fun var_env var -> add_taint_to_var_in_env var_env var taints)
               var_env' (var :: dots)

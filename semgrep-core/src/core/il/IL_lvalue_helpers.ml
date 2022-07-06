@@ -120,12 +120,9 @@ let lvar_of_instr_opt x =
   let* lval = lval_of_instr_opt x in
   match lval with
   | { base = Var name; _ } -> (
-      let str_of_name name = Common.spf "%s:%d" (fst name.ident) name.sid in
       let dots = dotted_lvars_of_lval lval in
       match dots with
-      | dotted_name :: _ ->
-          print_endline @@ "FOUND DOTTED LVAR: " ^ str_of_name dotted_name;
-          Some (dotted_name, dots)
+      | dotted_name :: _ -> Some (dotted_name, dots)
       | [] -> Some (name, []))
   | _ -> None
 
