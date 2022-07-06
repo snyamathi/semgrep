@@ -126,6 +126,7 @@ class StreamingSemgrepCore:
 
     This behavior is assumed to be that semgrep-core:
     - prints a "." on a newline for every file it finishes scanning
+    - prints a number on a newline for any extra targets produced during a scan
     - prints a single json blob of all results
 
     Exposes the subprocess.CompletedProcess properties for
@@ -135,7 +136,7 @@ class StreamingSemgrepCore:
     def __init__(self, cmd: List[str], total: int) -> None:
         """
         cmd: semgrep-core command to run
-        total: how many rules to run / how many "." we expect to see
+        total: how many rules to run / how many "." we expect to see a priori
                used to display progress_bar
         """
         self._cmd = cmd
@@ -146,7 +147,7 @@ class StreamingSemgrepCore:
 
     @property
     def stdout(self) -> str:
-        # stdout of semgrep-core sans "."
+        # stdout of semgrep-core sans "." and extra target counts
         return self._stdout
 
     @property
@@ -163,33 +164,82 @@ class StreamingSemgrepCore:
         Updates progress bar one increment for every "." it sees from semgrep-core
         stdout
 
-        When it sees non-"." output it saves it to self._stdout
+        Increases the progress bar total for any number reported from semgrep-core
+        stdout
+
+        When it sees neither output it saves it to self._stdout
         """
         stdout_lines: List[bytes] = []
+        num_total_targets: Optional[int] = self._total if self._total > 1 else None
+        num_scanned_targets: int = 0
 
         # appease mypy. stream is only None if call to create_subproccess_exec
         # sets stdout/stderr stream to None
         assert stream
 
-        # Start out reading two bytes at a time (".\n")
-        bytes_to_read = 2
+        line_bytes = b""
+        if num_total_targets is not None:
+            while True:
+                # blocking read if buffer doesnt contain any lines or EOF
+                line_bytes = await stream.readline()
+
+                # We expect to read a json blob before EOF, but return here on
+                # unexpected EOF
+                if not line_bytes:
+                    return
+
+                if line_bytes == b".\n":
+                    num_scanned_targets += 1
+                    if self._progress_bar:
+                        self._progress_bar.update()
+                else:
+                    try:
+                        extra_targets = int(line_bytes)
+                        num_total_targets += extra_targets
+                        if self._progress_bar:
+                            self._progress_bar.total += extra_targets
+                    except ValueError:
+                        # We saw a non-("." or number) line; move to reading
+                        # json output blob.
+                        #
+                        # Leave this in `line_bytes` so we can capture it in
+                        # stdout in the next loop.
+                        break
+
+                # If we expect to be done, move to the next loop. This is
+                # necessary because reading with `stream.readline()` above will
+                # cause issues (namely, fill the pipe) if reading the json
+                # result dump.
+                #
+                # See e.g., <https://github.com/returntocorp/semgrep/issues/4693>
+                if num_scanned_targets == num_total_targets:
+                    # Reset `line_bytes` here so the last state communication
+                    # output isn't captured in stdout.
+                    line_bytes = b""
+                    break
+
+        json_started = False
         while True:
-            # blocking read if buffer doesnt contain any lines or EOF
+            # Once we see a non-"." char it means we are reading a large json
+            # blob so increase the buffer read size (kept below subprocess
+            # buffer limit below)
+            stdout_lines.append(line_bytes)
+            bytes_to_read = 1024 * 1024 * 512
             line_bytes = await stream.read(n=bytes_to_read)
+
+            if not json_started:
+                i = line_bytes.find(b"{")
+                if i != -1:
+                    line_bytes = line_bytes[i:]
+                    json_started = True
+                else:
+                    line_bytes = b""
+                    continue
 
             # read returns empty when EOF
             if not line_bytes:
                 self._stdout = b"".join(stdout_lines).decode("utf-8", "replace")
                 break
-
-            if line_bytes == b".\n":
-                if self._progress_bar:
-                    self._progress_bar.update()
-            else:
-                stdout_lines.append(line_bytes)
-                # Once we see a non-"." char it means we are reading a large json blob
-                # so increase the buffer read size (kept below subprocess buffer limit below)
-                bytes_to_read = 1024 * 1024 * 512
 
     async def _core_stderr_processor(
         self, stream: Optional[asyncio.StreamReader]
