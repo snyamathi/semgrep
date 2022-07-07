@@ -95,7 +95,7 @@ let rlvals_of_instr x =
 let dotted_lvars_of_lval = function
   | { base = Var name; offset } -> (
       let id, tok = name.ident in
-      let str_of_name name = Common.spf "%s:%d" (fst name.ident) name.sid in
+      let str_of_name name = Common.spf "%s-%d" (fst name.ident) name.sid in
       let dot_strs =
         List.fold_right
           (fun o s ->
@@ -112,8 +112,8 @@ let dotted_lvars_of_lval = function
       | Some [] ->
           []
       | Some dot_strs ->
-          let add_dots dots = { name with ident = (id ^ dots, tok) } in
-          Common.map add_dots dot_strs)
+          let add_dots dots = { name with ident = (id ^ ";" ^ dots, tok) } in
+          Common.map add_dots dot_strs @ [ name ])
   | _ -> []
 
 let lvar_of_instr_opt x =

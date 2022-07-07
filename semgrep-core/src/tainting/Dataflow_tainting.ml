@@ -82,6 +82,7 @@ type mapping = taint_info Dataflow_core.mapping
 
 (* HACK: Tracks tainted functions intrafile. *)
 type fun_env = (var, PM.Set.t) Hashtbl.t
+type field_env = (var, var) Hashtbl.t
 type var_env = taint_info VarMap.t
 
 type env = {
@@ -89,6 +90,7 @@ type env = {
   fun_name : var option;
   fun_env : fun_env;
   var_env : var_env;
+  field_env : field_env;
 }
 
 (*****************************************************************************)
@@ -587,6 +589,33 @@ let check_tainted_return env tok e : Taints.t * var_env =
   (taints, var_env')
 
 (*****************************************************************************)
+(* Find lvars with prefix *)
+(*****************************************************************************)
+
+let parse_str str =
+  match String.split_on_char ':' str with
+  | [ id_and_dots; sid ] -> (
+      match String.split_on_char ';' id_and_dots with
+      | [ id; dots ] -> (id, dots, sid)
+      | [ id ] -> (id, "", sid)
+      | _ -> failwith "improperly encoded taint var")
+  | _ -> failwith "improperly encoded taint var"
+
+let rec is_prefix prefix str =
+  match (prefix, str) with
+  | c0 :: prefix, c1 :: str -> Char.equal c0 c1 && is_prefix prefix str
+  | [], _ -> true
+  | _ :: _, [] -> false
+
+let is_dotted_prefix clean_var new_var =
+  let id0, dots0, sid0 = parse_str clean_var in
+  let id1, dots1, sid1 = parse_str new_var in
+  String.equal id0 id1 && String.equal sid0 sid1
+  && is_prefix
+       (List.of_seq (String.to_seq dots0))
+       (List.of_seq (String.to_seq dots1))
+
+(*****************************************************************************)
 (* Transfer *)
 (*****************************************************************************)
 
@@ -618,7 +647,15 @@ let (transfer :
   let in' : taint_info VarMap.t = input_env ~enter_env ~flow mapping ni in
   let node = flow.graph#nodes#assoc ni in
   let out' : taint_info VarMap.t =
-    let env = { config; fun_name = opt_name; fun_env; var_env = in' } in
+    let env =
+      {
+        config;
+        fun_name = opt_name;
+        fun_env;
+        var_env = in';
+        field_env = Hashtbl.create 100;
+      }
+    in
     match node.F.n with
     | NInstr x -> (
         let taints, var_env' = check_tainted_instr env x in
@@ -633,12 +670,17 @@ let (transfer :
         match (Taints.is_empty taints, LV.lvar_of_instr_opt x) with
         (* Instruction returns safe data, remove taint from `var`. *)
         | true, Some (var, _) ->
-            VarMap.add (str_of_name var) MarkedClean var_env'
+            let var = str_of_name var in
+            VarMap.fold
+              (fun str taint map ->
+                if is_dotted_prefix var str then VarMap.add str MarkedClean map
+                else VarMap.add str taint map)
+              var_env' VarMap.empty
         (* Instruction returns tainted data, add taints to `var`. *)
-        | false, Some (var, dots) ->
+        | false, Some (_, dots) ->
             List.fold_left
               (fun var_env var -> add_taint_to_var_in_env var_env var taints)
-              var_env' (var :: dots)
+              var_env' dots
         (* There is no variable being assigned, presumably the Instruction
          * returns 'void'. *)
         | _, None -> var_env')
