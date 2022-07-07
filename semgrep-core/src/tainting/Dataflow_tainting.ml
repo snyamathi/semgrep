@@ -679,7 +679,8 @@ let (transfer :
               (fun str taint map ->
                 if is_dotted_prefix var str then VarMap.add str MarkedClean map
                 else VarMap.add str taint map)
-              var_env' VarMap.empty
+              (VarMap.add var MarkedClean var_env')
+              VarMap.empty
         (* Instruction returns tainted data, add taints to `var`. *)
         | false, Some (base_name, _, dots) ->
             List.fold_left
