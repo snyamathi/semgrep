@@ -607,15 +607,16 @@ properties:
               - message
               - languages
               - severity
-            oneOf:
-              - required:
-                  - pattern
-              - required:
-                  - patterns
-              - required:
-                  - pattern-either
-              - required:
-                  - pattern-regex
+            anyOf:
+              - oneOf:
+                  - required:
+                      - pattern
+                  - required:
+                      - patterns
+                  - required:
+                      - pattern-either
+                  - required:
+                      - pattern-regex
               - required:
                   - r2c-internal-project-depends-on
             properties:
