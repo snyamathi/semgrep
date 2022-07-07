@@ -533,7 +533,7 @@ let transfer :
             let lvar_opt = LV.lvar_of_instr_opt instr in
             match lvar_opt with
             | None -> inp'
-            | Some (lvar, _) -> D.VarMap.remove (str_of_name lvar) inp'))
+            | Some (_, lvar, _) -> D.VarMap.remove (str_of_name lvar) inp'))
   in
 
   { D.in_env = inp'; out_env = out' }

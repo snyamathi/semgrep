@@ -596,10 +596,10 @@ let parse_str str =
   match String.split_on_char ':' str with
   | [ id_and_dots; sid ] -> (
       match String.split_on_char ';' id_and_dots with
-      | [ id; dots ] -> (id, dots, sid)
-      | [ id ] -> (id, "", sid)
-      | _ -> failwith "improperly encoded taint var")
-  | _ -> failwith "improperly encoded taint var"
+      | [ id; dots ] -> Some (id, dots, sid)
+      | [ id ] -> Some (id, "", sid)
+      | _ -> None)
+  | _ -> None
 
 let rec is_prefix prefix str =
   match (prefix, str) with
@@ -608,12 +608,16 @@ let rec is_prefix prefix str =
   | _ :: _, [] -> false
 
 let is_dotted_prefix clean_var new_var =
-  let id0, dots0, sid0 = parse_str clean_var in
-  let id1, dots1, sid1 = parse_str new_var in
-  String.equal id0 id1 && String.equal sid0 sid1
-  && is_prefix
-       (List.of_seq (String.to_seq dots0))
-       (List.of_seq (String.to_seq dots1))
+  parse_str clean_var |> function
+  | None -> false
+  | Some (id0, dots0, sid0) -> (
+      parse_str new_var |> function
+      | None -> false
+      | Some (id1, dots1, sid1) ->
+          String.equal id0 id1 && String.equal sid0 sid1
+          && is_prefix
+               (List.of_seq (String.to_seq dots0))
+               (List.of_seq (String.to_seq dots1)))
 
 (*****************************************************************************)
 (* Transfer *)
@@ -662,14 +666,14 @@ let (transfer :
         let var_env' =
           match LV.lvar_of_instr_opt x with
           | None -> var_env'
-          | Some (var, _) ->
+          | Some (_, var, _) ->
               (* We call `check_tainted_var` here because the assigned `var`
                * itself could be annotated as a source of taint. *)
               check_tainted_var { env with var_env = var_env' } var |> snd
         in
         match (Taints.is_empty taints, LV.lvar_of_instr_opt x) with
         (* Instruction returns safe data, remove taint from `var`. *)
-        | true, Some (var, _) ->
+        | true, Some (_, var, _) ->
             let var = str_of_name var in
             VarMap.fold
               (fun str taint map ->
@@ -677,10 +681,10 @@ let (transfer :
                 else VarMap.add str taint map)
               var_env' VarMap.empty
         (* Instruction returns tainted data, add taints to `var`. *)
-        | false, Some (_, dots) ->
+        | false, Some (base_name, _, dots) ->
             List.fold_left
               (fun var_env var -> add_taint_to_var_in_env var_env var taints)
-              var_env' dots
+              var_env' (base_name :: dots)
         (* There is no variable being assigned, presumably the Instruction
          * returns 'void'. *)
         | _, None -> var_env')
