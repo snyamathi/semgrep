@@ -590,6 +590,7 @@ let check_tainted_return env tok e : Taints.t * var_env =
 
 (*****************************************************************************)
 (* Find lvars with prefix *)
+(* This is kind of a horrible hack to avoid changing the fact that var_envs contain only strings *)
 (*****************************************************************************)
 
 let parse_str str =
