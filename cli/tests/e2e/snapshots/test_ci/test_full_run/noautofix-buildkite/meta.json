@@ -1,8 +1,8 @@
 {
   "meta": {
     "semgrep_version": "<sanitized version>",
-    "repository": "project_name/project_name",
-    "repo_url": "https://github.com/project_name/project_name.git",
+    "repository": "",
+    "repo_url": null,
     "branch": "some/branch-name",
     "ci_job_url": "https://buildkite.build.url/something#42",
     "commit": "sanitized",
