@@ -38,7 +38,7 @@ Findings:
 === stderr - plain
 Scan environment:
   versions    - semgrep <MASKED> on python <MASKED>
-  environment - running in environment circleci, triggering event is pull_request
+  environment - running in environment circleci, triggering event is unknown
   semgrep.dev - authenticated as org_name
 
 Fetching configuration from semgrep.dev
