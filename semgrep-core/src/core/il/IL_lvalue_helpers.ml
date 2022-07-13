@@ -104,7 +104,12 @@ let dotted_lvars_of_lval = function
                 let x = s ^ "." ^ str_of_name name in
                 Some (x :: s :: ss)
             | Some [], Dot name -> Some [ "." ^ str_of_name name ]
-            | _ -> None)
+            (* We only care about tracking taint through fields
+             * So if we hit a non-Dot offset, we just give up
+             *)
+            | Some _, Index _
+            | None, _ ->
+                None)
           offset (Some [])
       in
       match dot_strs with
