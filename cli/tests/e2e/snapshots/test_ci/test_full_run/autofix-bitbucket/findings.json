@@ -154,6 +154,22 @@
       "metadata": {},
       "is_blocking": true,
       "match_based_id": "428d340d1be54b3f1fbc781d56aef28eb2092d3f140cab3a5d03ad7a769e21803c79eb728c18dce723226b7f224e8f688395081ca05d48bc2c1590d312d26fca_0"
+    },
+    {
+      "check_id": "experimental-eqeq-two",
+      "path": "foo.py",
+      "line": 26,
+      "column": 5,
+      "end_line": 26,
+      "end_column": 11,
+      "message": "useless comparison to 2",
+      "severity": 4,
+      "index": 0,
+      "commit_date": "sanitized",
+      "syntactic_id": "0a79f9dcd27e3ba2adf51562733f2ab6",
+      "metadata": {},
+      "is_blocking": true,
+      "match_based_id": "76aa103c5b6bb1f9c28c2eeb1c8c1a65845877e3051ee09c12cbdb7ffbb6e0ca1723af2c98bde71dcde70faf5be95bf795b01c581bba18fe0919856a33bb4b6e_0"
     }
   ],
   "searched_paths": [
@@ -162,7 +178,8 @@
   "rule_ids": [
     "eqeq-bad",
     "eqeq-five",
-    "eqeq-four"
+    "eqeq-four",
+    "experimental-eqeq-two"
   ],
   "cai_ids": [
     "__r2c-internal-cai_eqeq"
