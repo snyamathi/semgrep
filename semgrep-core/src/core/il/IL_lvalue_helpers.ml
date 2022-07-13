@@ -108,9 +108,7 @@ let dotted_lvars_of_lval = function
           offset (Some [])
       in
       match dot_strs with
-      | None
-      | Some [] ->
-          []
+      | None -> []
       | Some dot_strs ->
           let add_dots dots = { name with ident = (id ^ ";" ^ dots, tok) } in
           Common.map add_dots dot_strs)
@@ -119,11 +117,9 @@ let dotted_lvars_of_lval = function
 let lvar_of_instr_opt x =
   let* lval = lval_of_instr_opt x in
   match lval with
-  | { base = Var name; _ } -> (
+  | { base = Var base_name; _ } ->
       let dots = dotted_lvars_of_lval lval in
-      match dots with
-      | dotted_name :: _ -> Some (name, dotted_name, dots)
-      | [] -> Some (name, name, []))
+      Some (base_name, dots)
   | _ -> None
 
 let rlvals_of_node = function

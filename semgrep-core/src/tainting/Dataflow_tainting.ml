@@ -82,7 +82,6 @@ type mapping = taint_info Dataflow_core.mapping
 
 (* HACK: Tracks tainted functions intrafile. *)
 type fun_env = (var, PM.Set.t) Hashtbl.t
-type field_env = (var, var) Hashtbl.t
 type var_env = taint_info VarMap.t
 
 type env = {
@@ -90,7 +89,6 @@ type env = {
   fun_name : var option;
   fun_env : fun_env;
   var_env : var_env;
-  field_env : field_env;
 }
 
 (*****************************************************************************)
@@ -390,18 +388,9 @@ let rec check_tainted_expr env exp : Taints.t * var_env =
     | Fetch ({ base; offset; _ } as lval) -> (
         let dotted_lvars = IL_lvalue_helpers.dotted_lvars_of_lval lval in
         let x =
-          match dotted_lvars with
-          | _ :: _ as ns ->
-              let rec go = function
-                | [] -> None
-                | Some t :: _ -> Some t
-                | None :: ts -> go ts
-              in
-              ns
-              |> Common.map (fun x ->
-                     VarMap.find_opt (str_of_name x) env.var_env)
-              |> go
-          | [] -> None
+          Common.find_some_opt
+            (fun x -> VarMap.find_opt (str_of_name x) env.var_env)
+            dotted_lvars
         in
         match x with
         | Some MarkedClean -> (Taints.empty, env.var_env)
@@ -609,16 +598,13 @@ let rec is_prefix prefix str =
   | _ :: _, [] -> false
 
 let is_dotted_prefix clean_var new_var =
-  parse_str clean_var |> function
-  | None -> false
-  | Some (id0, dots0, sid0) -> (
-      parse_str new_var |> function
-      | None -> false
-      | Some (id1, dots1, sid1) ->
-          String.equal id0 id1 && String.equal sid0 sid1
-          && is_prefix
-               (List.of_seq (String.to_seq dots0))
-               (List.of_seq (String.to_seq dots1)))
+  let ( let* ) x f = Option.fold x ~none:false ~some:f in
+  let* id0, dots0, sid0 = parse_str clean_var in
+  let* id1, dots1, sid1 = parse_str new_var in
+  String.equal id0 id1 && String.equal sid0 sid1
+  && is_prefix
+       (List.of_seq (String.to_seq dots0))
+       (List.of_seq (String.to_seq dots1))
 
 (*****************************************************************************)
 (* Transfer *)
@@ -652,30 +638,24 @@ let (transfer :
   let in' : taint_info VarMap.t = input_env ~enter_env ~flow mapping ni in
   let node = flow.graph#nodes#assoc ni in
   let out' : taint_info VarMap.t =
-    let env =
-      {
-        config;
-        fun_name = opt_name;
-        fun_env;
-        var_env = in';
-        field_env = Hashtbl.create 100;
-      }
-    in
+    let env = { config; fun_name = opt_name; fun_env; var_env = in' } in
     match node.F.n with
     | NInstr x -> (
         let taints, var_env' = check_tainted_instr env x in
+        let lvar = LV.lvar_of_instr_opt x in
         let var_env' =
-          match LV.lvar_of_instr_opt x with
+          match lvar with
           | None -> var_env'
-          | Some (_, var, _) ->
+          | Some (name, [])
+          | Some (_, name :: _) ->
               (* We call `check_tainted_var` here because the assigned `var`
                * itself could be annotated as a source of taint. *)
-              check_tainted_var { env with var_env = var_env' } var |> snd
+              check_tainted_var { env with var_env = var_env' } name |> snd
         in
-        match (Taints.is_empty taints, LV.lvar_of_instr_opt x) with
+        match (Taints.is_empty taints, lvar) with
         (* Instruction returns safe data, remove taint from `var`. *)
-        | true, Some (_, var, _) ->
-            let var = str_of_name var in
+        | true, (Some (name, []) | Some (_, name :: _)) ->
+            let var = str_of_name name in
             VarMap.fold
               (fun str taint map ->
                 if is_dotted_prefix var str then VarMap.add str MarkedClean map
@@ -683,7 +663,7 @@ let (transfer :
               (VarMap.add var MarkedClean var_env')
               VarMap.empty
         (* Instruction returns tainted data, add taints to `var`. *)
-        | false, Some (base_name, _, dots) ->
+        | false, Some (base_name, dots) ->
             List.fold_left
               (fun var_env var -> add_taint_to_var_in_env var_env var taints)
               var_env' (base_name :: dots)
