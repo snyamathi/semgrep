@@ -387,21 +387,22 @@ let rec check_tainted_expr env exp : Taints.t * var_env =
         (taints, env.var_env)
     | Fetch ({ base; offset; _ } as lval) -> (
         let dotted_lvars = IL_lvalue_helpers.dotted_lvars_of_lval lval in
-        let x =
+        (* Find the first dotted lvar that we know something definitive about *)
+        let known_lvar_status =
           Common.find_some_opt
             (fun x -> VarMap.find_opt (str_of_name x) env.var_env)
             dotted_lvars
         in
-        match x with
-        | Some MarkedClean -> (Taints.empty, env.var_env)
-        | Some (Tainted _)
-        | None ->
-            let var_taints, var_env =
-              match x with
-              | Some (Tainted t) -> (t, env.var_env)
-              | None -> (Taints.empty, env.var_env)
-              | Some _ -> failwith "impossible"
-            in
+        let var_info =
+          match known_lvar_status with
+          | None -> `CheckTaint (Taints.empty, env.var_env)
+          | Some (Tainted t) -> `CheckTaint (t, env.var_env)
+          | Some MarkedClean -> `Clean (Taints.empty, env.var_env)
+        in
+
+        match var_info with
+        | `Clean info -> info
+        | `CheckTaint (var_taints, var_env) ->
             let base_taints, var_env = check_base { env with var_env } base in
             let offset_taints, var_env =
               union_map_taints_and_vars { env with var_env } check_offset offset
@@ -654,7 +655,8 @@ let (transfer :
         in
         match (Taints.is_empty taints, lvar) with
         (* Instruction returns safe data, remove taint from `var`. *)
-        | true, (Some (name, []) | Some (_, name :: _)) ->
+        | true, Some (name, []) -> VarMap.remove (str_of_name name) var_env'
+        | true, Some (_, name :: _) ->
             let var = str_of_name name in
             VarMap.fold
               (fun str taint map ->
