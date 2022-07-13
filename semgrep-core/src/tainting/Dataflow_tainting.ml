@@ -399,7 +399,7 @@ let rec check_tainted_expr env exp : Taints.t * var_env =
           | Some (Tainted t) -> `CheckTaint (t, env.var_env)
           | Some MarkedClean -> `Clean (Taints.empty, env.var_env)
         in
-
+        (* TODO: if we know two different sub dotted lvars are tainted, should we union their taints? *)
         match var_info with
         | `Clean info -> info
         | `CheckTaint (var_taints, var_env) ->
@@ -656,6 +656,9 @@ let (transfer :
         match (Taints.is_empty taints, lvar) with
         (* Instruction returns safe data, remove taint from `var`. *)
         | true, Some (name, []) -> VarMap.remove (str_of_name name) var_env'
+        (* Instruction returns safe data, and we have a dotted lvar, remove taint from anything
+           with name as a dotted prefix. If [a.b] is clean then [a.b.c] and [a.b.c.d] are too
+        *)
         | true, Some (_, name :: _) ->
             let var = str_of_name name in
             VarMap.fold
@@ -664,7 +667,10 @@ let (transfer :
                 else VarMap.add str taint map)
               (VarMap.add var MarkedClean var_env')
               VarMap.empty
-        (* Instruction returns tainted data, add taints to `var`. *)
+        (* Instruction returns tainted data, add taint to the lvar, and all of its dotted prefixes
+           So tainting [a.b.c] also taints [a.b] and [a]
+           TODO: Remove the propagation of taint up Dot offset stacks?
+        *)
         | false, Some (base_name, dots) ->
             List.fold_left
               (fun var_env var -> add_taint_to_var_in_env var_env var taints)
