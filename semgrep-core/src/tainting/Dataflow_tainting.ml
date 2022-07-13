@@ -667,14 +667,17 @@ let (transfer :
                 else VarMap.add str taint map)
               (VarMap.add var MarkedClean var_env')
               VarMap.empty
-        (* Instruction returns tainted data, add taint to the lvar, and all of its dotted prefixes
-           So tainting [a.b.c] also taints [a.b] and [a]
-           TODO: Remove the propagation of taint up Dot offset stacks?
+        (* Instruction returns tainted data, add taint to [name] *)
+        | false, Some (name, [] | _, name :: _) ->
+            add_taint_to_var_in_env var_env' name taints
+        (* TODO: propagate taint through all dotted prefixes?
+              So tainting [a.b.c] also taints [a.b] and [a]
+
+           | false, Some (base_name, dots) ->
+               List.fold_left
+                 (fun var_env var -> add_taint_to_var_in_env var_env var taints)
+                 var_env' (base_name :: dots)
         *)
-        | false, Some (base_name, dots) ->
-            List.fold_left
-              (fun var_env var -> add_taint_to_var_in_env var_env var taints)
-              var_env' (base_name :: dots)
         (* There is no variable being assigned, presumably the Instruction
          * returns 'void'. *)
         | _, None -> var_env')
