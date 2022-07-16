@@ -1,8 +1,24 @@
 Scanning 1 file.
-[31m[41m[22m[24m[[0m[38;5;231m[41m[1m[24mERROR[0m[31m[41m[22m[24m][0m Pattern parse error in rule -:
- Invalid pattern for C:
---- pattern ---
-#include<asdf><<>>><$X>
---- end pattern ---
-Pattern error: Parsing.Parse_error
-
+missing field 'skipped' in JSON object of type 'CoreMatchResults'
+Traceback (most recent call last):
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/commands/wrapper.py", line 35, in wrapper
+    func(*args, **kwargs)
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/commands/scan.py", line 807, in scan
+    ) = semgrep.semgrep_main.main(
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/semgrep_main.py", line 363, in main
+    rule_matches_by_rule, semgrep_errors, all_targets, profiling_data = run_rules(
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/semgrep_main.py", line 154, in run_rules
+    ) = core_runner.invoke_semgrep(
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/core_runner.py", line 758, in invoke_semgrep
+    ) = self._run_rules_direct_to_semgrep_core(
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/core_runner.py", line 706, in _run_rules_direct_to_semgrep_core
+    output_json = self._extract_core_output(
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/core_runner.py", line 419, in _extract_core_output
+    parsed_output = parse_core_output(output_json)
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/core_output.py", line 90, in parse_core_output
+    match_results = core.CoreMatchResults.from_json(raw_json)
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/semgrep_interfaces/semgrep_output_v0.py", line 1784, in from_json
+    skipped_targets=_atd_read_list(SkippedTarget.from_json)(x['skipped']) if 'skipped' in x else _atd_missing_json_field('CoreMatchResults', 'skipped'),
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/semgrep_interfaces/semgrep_output_v0.py", line 21, in _atd_missing_json_field
+    raise ValueError(f"missing field '{json_field_name}'"
+ValueError: missing field 'skipped' in JSON object of type 'CoreMatchResults'

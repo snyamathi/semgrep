@@ -1,6 +1,22 @@
 Scanning 1 file.
-
-Some files were skipped or only partially analyzed.
-  Scan was limited to files tracked by git.
-
-Ran 1 rule on 1 file: 1 finding.
+missing field 'skipped' in JSON object of type 'CoreMatchResults'
+Traceback (most recent call last):
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/commands/wrapper.py", line 35, in wrapper
+    func(*args, **kwargs)
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/commands/scan.py", line 807, in scan
+    ) = semgrep.semgrep_main.main(
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/semgrep_main.py", line 363, in main
+    rule_matches_by_rule, semgrep_errors, all_targets, profiling_data = run_rules(
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/semgrep_main.py", line 154, in run_rules
+    ) = core_runner.invoke_semgrep(
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/core_runner.py", line 758, in invoke_semgrep
+    ) = self._run_rules_direct_to_semgrep_core(
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/core_runner.py", line 713, in _run_rules_direct_to_semgrep_core
+    core_output = parse_core_output(output_json)
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/core_output.py", line 90, in parse_core_output
+    match_results = core.CoreMatchResults.from_json(raw_json)
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/semgrep_interfaces/semgrep_output_v0.py", line 1784, in from_json
+    skipped_targets=_atd_read_list(SkippedTarget.from_json)(x['skipped']) if 'skipped' in x else _atd_missing_json_field('CoreMatchResults', 'skipped'),
+  File "/home/runner/work/semgrep/semgrep/cli/src/semgrep/semgrep_interfaces/semgrep_output_v0.py", line 21, in _atd_missing_json_field
+    raise ValueError(f"missing field '{json_field_name}'"
+ValueError: missing field 'skipped' in JSON object of type 'CoreMatchResults'
